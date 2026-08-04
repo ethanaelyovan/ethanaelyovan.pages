@@ -219,3 +219,7 @@ body {
     column-count: 1;
   }
 }
+
+* {
+  cursor: url("assets/cursor.png") 16 16, auto;
+}
