@@ -220,6 +220,31 @@ body {
   }
 }
 
-* {
-  cursor: url("assets/cursor.png") 16 16, auto;
+/* Normal cursor */
+body {
+  cursor: url("assets/cursors/default.png") 16 16, auto;
+}
+
+
+/* Links, buttons, clickable things */
+a,
+button,
+.gallery__item {
+  cursor: url("assets/cursors/pointer.png") 16 16, pointer;
+}
+
+
+/* While clicking */
+a:active,
+button:active,
+.gallery__item:active {
+  cursor: url("assets/cursors/click.png") 16 16, pointer;
+}
+
+
+/* Text */
+input,
+textarea,
+[contenteditable="true"] {
+  cursor: url("assets/cursors/text.png") 16 16, text;
 }
