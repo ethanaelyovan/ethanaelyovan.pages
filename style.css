@@ -205,6 +205,75 @@ body {
 }
 
 
+/* =========================
+   LIGHTBOX
+========================= */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0,0,0,0.9);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity 0.3s ease;
+}
+
+
+.lightbox.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+.lightbox__image {
+  max-width: 90vw;
+  max-height: 90vh;
+
+  object-fit: contain;
+
+  animation: zoom 0.25s ease;
+}
+
+
+.lightbox__close {
+  position: absolute;
+
+  top: 30px;
+  right: 40px;
+
+  background: none;
+  border: none;
+
+  color: white;
+
+  font-size: 50px;
+  font-family: inherit;
+
+  cursor: pointer;
+}
+
+
+@keyframes zoom {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* Tablet */
 @media (max-width: 900px) {
   .gallery__grid {
