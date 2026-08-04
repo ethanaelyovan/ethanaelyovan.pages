@@ -220,13 +220,17 @@ body {
   }
 }
 
-/* Normal cursor */
+/* =========================
+   CUSTOM CURSORS
+========================= */
+
+/* Default cursor */
 body {
-  cursor: url("assets/cursors/default.png") 16 16, auto;
+  cursor: url("assets/cursors/cursor.png") 16 16, auto;
 }
 
 
-/* Links, buttons, clickable things */
+/* Links and clickable elements */
 a,
 button,
 .gallery__item {
@@ -234,17 +238,17 @@ button,
 }
 
 
-/* While clicking */
-a:active,
-button:active,
-.gallery__item:active {
-  cursor: url("assets/cursors/click.png") 16 16, pointer;
-}
-
-
-/* Text */
+/* Text fields */
 input,
 textarea,
 [contenteditable="true"] {
   cursor: url("assets/cursors/text.png") 16 16, text;
+}
+
+
+/* Clicking state */
+a:active,
+button:active,
+.gallery__item:active {
+  cursor: url("assets/cursors/pointer.png") 16 16, pointer;
 }
