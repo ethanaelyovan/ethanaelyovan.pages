@@ -101,13 +101,15 @@ body {
 
 .hero__tag span,
 .hero__bio span,
-.marquee__item span {
+.marquee__item span,
+.quote__text span {
   transition: color 0.15s ease;
 }
 
 .hero__tag span:hover,
 .hero__bio span:hover,
-.marquee__item span:hover {
+.marquee__item span:hover,
+.quote__text span:hover {
   color: #ff0000;
 }
 
@@ -153,6 +155,28 @@ body {
   .marquee__track {
     animation: none;
   }
+}
+
+/* =========================
+   QUOTE
+========================= */
+
+.quote {
+  width: 100%;
+  padding: clamp(48px, 8vw, 96px) var(--edge);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.quote__text {
+  font-family: var(--font-hand);
+  font-weight: 400;
+  font-size: clamp(1.4rem, 3.4vw, 2.6rem);
+  line-height: 1.3;
+  color: var(--fg);
+  max-width: 900px;
 }
 
 .links {
@@ -363,7 +387,8 @@ textarea,
 [contenteditable="true"],
 .hero__tag,
 .hero__bio,
-.marquee {
+.marquee,
+.quote {
   cursor: url("assets/cursors/text.png") 16 16, text;
 }
 

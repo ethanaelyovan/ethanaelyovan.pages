@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     wrapChars(document.querySelector(".hero__tag"));
     wrapChars(document.querySelector(".hero__bio"));
+    wrapChars(document.querySelector(".quote__text"));
     document.querySelectorAll(".marquee__item").forEach(wrapChars);
 
     const galleryItems = document.querySelectorAll(".gallery__item");
