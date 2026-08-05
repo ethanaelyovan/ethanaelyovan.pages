@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'CustomHand';
-  src: url('assets/fonts/Mousewritten_2026-08-04_1544-Regular.ttf') format('truetype');
+  src: url('assets/fonts/MOUSEWRITTEN_2026-08-05_2026-Regular.ttf') format('truetype');
   font-weight: 400;
   font-display: swap;
 }
@@ -239,7 +239,7 @@ body {
 }
 
 .gallery__grid {
-  column-count: 3;
+  column-count: 6;
   column-gap: clamp(10px, 1.2vw, 18px);
 }
 
