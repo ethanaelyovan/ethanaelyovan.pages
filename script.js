@@ -1,5 +1,40 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    // ---- games / projects ----
+    // Add or remove entries here to update the projects section — no HTML editing needed.
+    const projects = [
+        {
+            img: "assets/projects/flopipe.webp",
+            alt: "FloPipe",
+            name: "FloPipe",
+            description: "Game artist for a GameJam of Gemastik, creating both the renders, graphic design, and in game 3d models and assets of the cozy sandbox-like block isometric puzzle game.",
+            link: "https://example.com",
+            linkLabel: "View project"
+        },
+        {
+            img: "assets/projects/flopipe.webp",
+            alt: "Set Sail!",
+            name: "Set Sail!",
+            description: "Created designs, renders, visual concept art and packacking for a Set Collection and Resource Management Board Game",
+            link: "https://example.com",
+            linkLabel: "View project"
+        }
+    ];
+
+    const projectsList = document.getElementById("projectsList");
+    if (projectsList) {
+        projectsList.innerHTML = projects.map(p => `
+            <article class="project-card">
+                <img class="project-card__thumb" src="${p.img}" alt="${p.alt || ""}" loading="lazy">
+                <div class="project-card__body">
+                    <h3 class="project-card__name">${p.name}</h3>
+                    <p class="project-card__description">${p.description}</p>
+                    ${p.link ? `<a class="project-card__link" href="${p.link}" target="_blank" rel="noopener noreferrer">${p.linkLabel || "View project"}</a>` : ""}
+                </div>
+            </article>
+        `).join("");
+    }
+
     // Split text into per-character spans for the hover effect
     const wrapChars = (el) => {
         if (!el) return;
@@ -16,8 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
         el.innerHTML = wrapped;
     };
 
-    wrapChars(document.querySelector(".hero__tag"));
-    wrapChars(document.querySelector(".hero__bio"));
     wrapChars(document.querySelector(".quote__text"));
     document.querySelectorAll(".marquee__item").forEach(wrapChars);
 
