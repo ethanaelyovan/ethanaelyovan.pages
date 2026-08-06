@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Add or remove entries here to update the projects section — no HTML editing needed.
     const projects = [
         {
-            img: "assets/projects/flopipe.webp",
+            img: "assets/projects/FloPipe.webp",
             alt: "FloPipe",
             name: "FloPipe",
             description: "Game artist for a GameJam of Gemastik, creating both the renders, graphic design, and in game 3d models and assets of the cozy sandbox-like block isometric puzzle game.",
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
             linkLabel: "View project"
         },
         {
-            img: "assets/projects/flopipe.webp",
+            img: "assets/projects/FloPipe.webp",
             alt: "Set Sail!",
             name: "Set Sail!",
             description: "Created designs, renders, visual concept art and packacking for a Set Collection and Resource Management Board Game",
