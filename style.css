@@ -109,9 +109,6 @@ body {
   color: #ff0000;
 }
 
-/* =========================
-   MARQUEE STRIP
-========================= */
 
 .marquee {
   width: 100%;
@@ -147,9 +144,7 @@ body {
   }
 }
 
-/* =========================
-   LINKS STRIP (clickable marquee)
-========================= */
+
 
 .links-wrap {
   padding: 0 0 clamp(16px, 3vw, 32px);
@@ -191,9 +186,7 @@ body {
   opacity: 1;
 }
 
-/* =========================
-   GAMES / PROJECTS
-========================= */
+
 
 .projects {
   width: 100%;
@@ -272,9 +265,6 @@ body {
   }
 }
 
-/* =========================
-   QUOTE
-========================= */
 
 .quote {
   width: 100%;
@@ -294,9 +284,7 @@ body {
   max-width: 900px;
 }
 
-/* =========================
-   WORKS GALLERY
-========================= */
+
 
 .gallery {
   width: 100%;
@@ -330,23 +318,21 @@ body {
 }
 
 
-/* Hover */
+/* hover */
 .gallery__item:hover img {
   transform: scale(1.03);
   opacity: 0.85;
 }
 
 
-/* Keyboard accessibility */
+/* keyboard accessibility */
 .gallery__item:focus-visible {
   outline: 2px solid var(--fg);
   outline-offset: 6px;
 }
 
 
-/* =========================
-   LIGHTBOX
-========================= */
+
 
 .lightbox {
   position: fixed;
@@ -413,14 +399,14 @@ body {
   }
 }
 
-/* Large tablet / small desktop */
+
 @media (max-width: 1100px) {
   .gallery__grid {
     column-count: 4;
   }
 }
 
-/* Tablet */
+
 @media (max-width: 900px) {
   .gallery__grid {
     column-count: 3;
@@ -428,24 +414,20 @@ body {
 }
 
 
-/* Phone */
+
 @media (max-width: 600px) {
   .gallery__grid {
     column-count: 2;
   }
 }
 
-/* =========================
-   CUSTOM CURSORS
-========================= */
 
-/* Default cursor */
 body {
   cursor: url("assets/cursors/cursor.png") 16 16, auto;
 }
 
 
-/* Links and clickable elements */
+
 a,
 button,
 .gallery__item {
@@ -453,7 +435,7 @@ button,
 }
 
 
-/* Text fields */
+
 input,
 textarea,
 [contenteditable="true"],
@@ -466,7 +448,7 @@ textarea,
 }
 
 
-/* Clicking state */
+
 a:active,
 button:active,
 .gallery__item:active {
