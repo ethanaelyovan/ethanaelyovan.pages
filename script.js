@@ -13,10 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         {
             img: "assets/projects/FloPipe.webp",
-            alt: "Set Sail!",
-            name: "Set Sail!",
+            alt: "Cast Off!",
+            name: "Cast Off!",
             description: "Created designs, renders, visual concept art and packacking for a Set Collection and Resource Management Board Game",
-            link: "setsail.html",
+            link: "castoff.html",
             linkLabel: "View project"
         }
     ];
