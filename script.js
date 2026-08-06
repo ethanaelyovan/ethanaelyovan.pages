@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alt: "FloPipe",
             name: "FloPipe",
             description: "Game artist for a GameJam of Gemastik, creating both the renders, graphic design, and in game 3d models and assets of the cozy sandbox-like block isometric puzzle game.",
-            link: "https://example.com",
+            link: "flopipe.html",
             linkLabel: "View project"
         },
         {
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alt: "Set Sail!",
             name: "Set Sail!",
             description: "Created designs, renders, visual concept art and packacking for a Set Collection and Resource Management Board Game",
-            link: "https://example.com",
+            link: "setsail.html",
             linkLabel: "View project"
         }
     ];
