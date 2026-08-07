@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alt: "Cast Off!",
             name: "Cast Off!",
             description: "Created designs, renders, visual concept art and packacking for a Set Collection and Resource Management Board Game",
-            link: "https://docs.google.com/document/d/1oKPpY4Y4Nl50yw-RCEtad40tOalUst83WsKn6OyykXA/edit?usp=sharing"
+            link: "Castoff.html"
         }
     ];
 
