@@ -14,15 +14,13 @@
   color: var(--fg);
   text-decoration: none;
 
-  background: rgba(0, 0, 0, 0.55);
-  padding: 6px 18px;
-  border-radius: 999px;
-
-  transition: opacity 0.2s ease;
+  display: inline-block;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .project-back:hover {
-  opacity: 0.65;
+  color: #ff0000;
+  transform: scale(2) rotate(-4deg);
 }
 
 /* ---- hero image + title overlay ---- */
@@ -104,4 +102,41 @@
   .project-detail__image {
     max-width: 100%;
   }
+}
+
+/* ---- card carousel ---- */
+
+.card-carousel {
+  width: 100%;
+  padding: clamp(32px, 6vw, 72px) 0;
+  display: flex;
+  align-items: center;
+}
+
+.card-carousel__viewport {
+  flex: 1;
+  overflow: hidden;
+}
+
+.card-carousel__track {
+  display: flex;
+  gap: clamp(14px, 2vw, 28px);
+  width: max-content;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.card-carousel__track:active {
+  cursor: grabbing;
+}
+
+.card-carousel__item {
+  height: clamp(200px, 26vw, 380px);
+  width: auto;
+  border-radius: 10px;
+  display: block;
+  flex-shrink: 0;
+  pointer-events: none;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
 }
