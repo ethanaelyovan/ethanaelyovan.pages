@@ -8,16 +8,14 @@ document.addEventListener("DOMContentLoaded", () => {
             alt: "FloPipe",
             name: "FloPipe",
             description: "Game artist for a GameJam of Gemastik, creating both the renders, graphic design, and in game 3d models and assets of the cozy sandbox-like block isometric puzzle game.",
-            link: "flopipe.html",
-            linkLabel: "View project"
+            link: "flopipe.html"
         },
         {
             img: "assets/projects/CastOff.webp",
             alt: "Cast Off!",
             name: "Cast Off!",
             description: "Created designs, renders, visual concept art and packacking for a Set Collection and Resource Management Board Game",
-            link: "castoff.html",
-            linkLabel: "View project"
+            link: "https://docs.google.com/document/d/1oKPpY4Y4Nl50yw-RCEtad40tOalUst83WsKn6OyykXA/edit?usp=sharing"
         }
     ];
 
@@ -25,11 +23,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (projectsList) {
         projectsList.innerHTML = projects.map(p => `
             <article class="project-card">
-                <img class="project-card__thumb" src="${p.img}" alt="${p.alt || ""}" loading="lazy">
+                <a class="project-card__thumb-link" href="${p.link}">
+                    <img class="project-card__thumb" src="${p.img}" alt="${p.alt || ""}" loading="lazy">
+                </a>
                 <div class="project-card__body">
                     <h3 class="project-card__name">${p.name}</h3>
                     <p class="project-card__description">${p.description}</p>
-                    ${p.link ? `<a class="project-card__link" href="${p.link}" target="_blank" rel="noopener noreferrer">${p.linkLabel || "View project"}</a>` : ""}
                 </div>
             </article>
         `).join("");
