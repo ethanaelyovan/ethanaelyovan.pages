@@ -22,15 +22,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const projectsList = document.getElementById("projectsList");
     if (projectsList) {
         projectsList.innerHTML = projects.map(p => `
-            <article class="project-card">
-                <a class="project-card__thumb-link" href="${p.link}">
+            <a class="project-card" href="${p.link}">
+                <div class="project-card__frame">
                     <img class="project-card__thumb" src="${p.img}" alt="${p.alt || ""}" loading="lazy">
-                </a>
-                <div class="project-card__body">
-                    <h3 class="project-card__name">${p.name}</h3>
-                    <p class="project-card__description">${p.description}</p>
+                    <div class="project-card__overlay">
+                        <h3 class="project-card__name">${p.name}</h3>
+                        <p class="project-card__description">${p.description}</p>
+                    </div>
                 </div>
-            </article>
+            </a>
         `).join("");
     }
 
