@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'CustomHand';
-  src: url('assets/fonts/Mousewritten_2026-08-04_1544-Regular.ttf') format('truetype');
+  src: url('assets/fonts/DelaGothicOne-Regular.ttf') format('truetype');
   font-weight: 400;
   font-display: swap;
 }
@@ -26,7 +26,7 @@ html, body {
 
 body {
   font-family: var(--font-hand);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.000em;
 }
 
 .hero {
@@ -43,8 +43,8 @@ body {
 
 .hero__name-overlay {
   position: absolute;
-  top: 32%;
-  left: 62%;
+  top: 30%;
+  left: 55%;
   right: 4%;
   display: flex;
   flex-direction: column;
@@ -241,7 +241,7 @@ body {
 .project-card__description {
   font-family: var(--font-hand);
   font-weight: 400;
-  font-size: 2vw;
+  font-size: 1.5vw;
   line-height: 1.4;
   color: var(--fg);
   opacity: 0.9;
