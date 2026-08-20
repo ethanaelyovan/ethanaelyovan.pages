@@ -259,7 +259,7 @@ body {
 
 .quote {
   width: 100%;
-  padding: clamp(48px, 8vw, 96px) var(--edge);
+  padding: clamp(10px, 8vw, 10px) var(--edge);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -273,6 +273,25 @@ body {
   line-height: 1.3;
   color: var(--fg);
   max-width: 900px;
+}
+
+.model-icon {
+  width: 100%;
+  padding: clamp(16px, 3vw, 32px) 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.model-icon__canvas {
+  width: 100vw;
+  height: clamp(250px, 20vw, 200px);
+}
+
+.model-icon__canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 
