@@ -18,15 +18,13 @@ if (container) {
     container.appendChild(renderer.domElement);
 
     // ---- lighting ----
-    scene.add(new THREE.AmbientLight(0xffffff, 1.1));
+
 
     const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
     keyLight.position.set(2, 3, 4);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    fillLight.position.set(-3, -1, 2);
-    scene.add(fillLight);
+
 
     // ---- model ----
     let model = null;
