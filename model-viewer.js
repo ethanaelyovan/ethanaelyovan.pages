@@ -4,8 +4,8 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 const container = document.getElementById("fedoraModel");
 
 if (container) {
-    const width = container.clientWidth || 150;
-    const height = container.clientHeight || 150;
+    const width = container.clientWidth || 64;
+    const height = container.clientHeight || 64;
 
     const scene = new THREE.Scene();
 
@@ -18,13 +18,13 @@ if (container) {
     container.appendChild(renderer.domElement);
 
     // ---- lighting ----
-
-
     const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
     keyLight.position.set(2, 3, 4);
     scene.add(keyLight);
 
-
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    fillLight.position.set(-3, -1, 2);
+    scene.add(fillLight);
 
     // ---- model ----
     let model = null;
@@ -77,8 +77,8 @@ if (container) {
 
     // ---- resize ----
     window.addEventListener("resize", () => {
-        const w = container.clientWidth || 150;
-        const h = container.clientHeight || 150;
+        const w = container.clientWidth || 64;
+        const h = container.clientHeight || 64;
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         renderer.setSize(w, h);
