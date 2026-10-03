@@ -1,206 +1,324 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ethanael Yovan</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ethanael Yovan G. — Portfolio</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<!--
+  Two separate selectors: the CD shelf (personal works) drives the CRT; the dial (projects) drives the bottom-right panel.
+  Modules are invisible grid cells (placement lives in style.css under .m-name, .m-shelf etc.).
+  On screens under 900px they stack in one column in the order set by --mo.
+  Assets: any <div class="slot" data-asset="path"> loads your Blender export; the .fb inside is the placeholder.
+-->
+<main class="rack">
 
-<div class="model-fixed" id="fedoraModel"></div>
+  <section class="m m-name" style="--mo:1">
+    <h1>Ethanael Yovan G.</h1>
+    <p>Making stuff for the sake of making stuff.</p>
+  </section>
 
-<section class="hero">
-  <img class="hero__image" src="assets/business-card.webp" alt="">
+  <section class="m m-links" style="--mo:2" aria-label="Links"><div class="links" id="links"></div></section>
 
-  <div class="hero__contact-overlay">
-    <span class="hero__contact-line">ethanaelyovan@gmail.com</span>
-    <span class="hero__contact-line">@ethanaelyovan</span>
-  </div>
+  <section class="m m-status" style="--mo:3" aria-label="Status">
+    <p><span class="led"></span>Designed with Figma and Blender.</p>
+    <button class="ctl" id="theme" aria-pressed="false" aria-label="Dark mode">
+      <div class="slot" style="--max:64px"><div class="fb"><div class="fb-switch"></div></div></div>
+      <span class="cap">Theme</span>
+    </button>
+  </section>
 
-  <div class="hero__name-overlay" aria-label="Ethanael Yovan Gunawan">
-    <span class="hero__name-line">Ethanael</span>
-    <span class="hero__name-line">Yovan</span>
-    <span class="hero__name-line">Gunawan</span>
-  </div>
-</section>
+  <section class="m m-shelf" style="--mo:5" aria-label="Personal works"><div class="shelf" id="shelf"></div></section>
 
-<section class="marquee" aria-hidden="true">
-  <div class="marquee__track">
-    <span class="marquee__item">PROJECTS</span>
-    <span class="marquee__item">PROJECTS</span>
-    <span class="marquee__item">PROJECTS</span>
-    <span class="marquee__item">PROJECTS</span>
-    <span class="marquee__item">PROJECTS</span>
-    <span class="marquee__item">PROJECTS</span>
-    <span class="marquee__item">PROJECTS</span>
-    <span class="marquee__item">PROJECTS</span>
-  </div>
-</section>
-
-<section class="links-wrap">
-  <div class="marquee" aria-label="Social links">
-    <div class="marquee__track">
-      <a class="marquee__link" href="https://linktr.ee/ethanaelyovan" target="_blank" rel="noopener noreferrer"><span class="marquee__item">LINKTREE</span></a><span class="marquee__divider">|</span><a class="marquee__link" href="https://www.instagram.com/ethanaelyovan" target="_blank" rel="noopener noreferrer"><span class="marquee__item">INSTAGRAM</span></a><span class="marquee__divider">|</span><a class="marquee__link" href="https://www.youtube.com/@ethanael_yovan" target="_blank" rel="noopener noreferrer"><span class="marquee__item">YOUTUBE</span></a><span class="marquee__divider">|</span><a class="marquee__link" href="Forza%20Gallery.html"><span class="marquee__item">FORZA PICS</span></a><span class="marquee__divider">|</span><a class="marquee__link" href="https://linktr.ee/ethanaelyovan" target="_blank" rel="noopener noreferrer"><span class="marquee__item">LINKTREE</span></a><span class="marquee__divider">|</span><a class="marquee__link" href="https://www.instagram.com/ethanaelyovan" target="_blank" rel="noopener noreferrer"><span class="marquee__item">INSTAGRAM</span></a><span class="marquee__divider">|</span><a class="marquee__link" href="https://www.youtube.com/@ethanael_yovan" target="_blank" rel="noopener noreferrer"><span class="marquee__item">YOUTUBE</span></a><span class="marquee__divider">|</span><a class="marquee__link" href="Forza%20Gallery.html"><span class="marquee__item">FORZA PICS</span></a><span class="marquee__divider">|</span><a class="marquee__link" href="https://linktr.ee/ethanaelyovan" target="_blank" rel="noopener noreferrer"><span class="marquee__item">LINKTREE</span></a><span class="marquee__divider">|</span><a class="marquee__link" href="https://www.instagram.com/ethanaelyovan" target="_blank" rel="noopener noreferrer"><span class="marquee__item">INSTAGRAM</span></a><span class="marquee__divider">|</span><a class="marquee__link" href="https://www.youtube.com/@ethanael_yovan" target="_blank" rel="noopener noreferrer"><span class="marquee__item">YOUTUBE</span></a><span class="marquee__divider">|</span><a class="marquee__link" href="Forza%20Gallery.html"><span class="marquee__item">FORZA PICS</span></a><span class="marquee__divider">|</span>
+  <section class="m m-dial" style="--mo:6" aria-label="Projects">
+    <div class="dial-wrap">
+      <div>
+        <div class="dial-shadow"><div class="slot" id="tuner" role="slider" tabindex="0" aria-label="Project selector" aria-valuemin="1" aria-valuenow="1">
+          <div class="fb"><div class="fb-dial"></div></div>
+        </div></div>
+        <span class="cap" style="text-align:center">Drag or use arrow keys</span>
+      </div>
+      <ul class="pj-list" id="pj-list"></ul>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="projects" aria-label="Games and projects">
-  <div class="projects__list" id="projectsList"></div>
-</section>
+  <section class="m m-crt" style="--mo:4" aria-label="Personal work preview">
+    <div class="crt over">
+      <button class="crt-screen" id="crt-open" title="View larger" aria-label="View project image larger">
+        <img id="crt-img" alt="" hidden>
+        <div class="ph" id="crt-ph"></div>
+      </button>
+      <div class="slot crt-frame" id="crt-frame"><div class="fb"><div class="fb-crt"></div></div></div>
+    </div>
+  </section>
 
-<section class="marquee" aria-hidden="true">
-  <div class="marquee__track">
-    <span class="marquee__item">EXPERIMENTATION</span>
-    <span class="marquee__item">PERSONAL WORKS</span>
-    <span class="marquee__item">EXPERIMENTATION</span>
-    <span class="marquee__item">PERSONAL WORKS</span>
-    <span class="marquee__item">EXPERIMENTATION</span>
-    <span class="marquee__item">PERSONAL WORKS</span>
-    <span class="marquee__item">EXPERIMENTATION</span>
-    <span class="marquee__item">PERSONAL WORKS</span>
-  </div>
-</section>
+  <section class="m m-idle" style="--mo:8" aria-hidden="true">
+    <div class="slot" data-asset="assets/idle.webm"><div class="fb"><div class="fb-dial" style="max-width:240px;max-height:240px;animation:spin 8s linear infinite"></div></div></div>
+  </section>
 
-<section class="gallery" aria-label="Works">
-  <div class="gallery__grid">
-    <button class="gallery__item" type="button"><img src="assets/works/1.webp" alt="Work 1" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/2.webp" alt="Work 2" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/3.webp" alt="Work 3" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/4.webp" alt="Work 4" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/spiderpunk.webp" alt="Spiderpunk" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/temple.webp" alt="Temple" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/tower.webp" alt="Tower" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/ultrakill.webp" alt="Ultrakill" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/alilboat.webp" alt="A Lil Boat" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/altoids.webp" alt="Altoids" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/angeltime.webp" alt="Angel Time" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/battlestation.webp" alt="Battlestation" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/brcastle.webp" alt="BR Castle" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/brlogo.webp" alt="BR Logo" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/castle2x.webp" alt="Castle 2x" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/castleagain2.webp" alt="Castle Again" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/cd-render.webp" alt="CD Render" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/Compilation2.webp" alt="Compilation 2" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/Compilation3.webp" alt="Compilation 3" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/earrings.webp" alt="Earrings" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/explosion%20wallpaperv2.webp" alt="Explosion Wallpaper" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/final.webp" alt="Final" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/fraud.webp" alt="Fraud" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/gothic2k.webp" alt="Gothic 2k" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/lambopainting.webp" alt="Lambo Painting" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/malenia_final.webp" alt="Malenia" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/nsx.webp" alt="NSX" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/playinggodfinal.webp" alt="Playing God" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/port-edition.webp" alt="Port Edition" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/setup.webp" alt="Setup" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/skull2.webp" alt="Skull" loading="lazy"></button>
-    <button class="gallery__item" type="button"><img src="assets/works/spacestation.webp" alt="Space Station" loading="lazy"></button>
-  </div>
-</section>
+  <section class="m m-info" style="--mo:7" aria-live="polite">
+    <h2 id="pj-title"></h2>
+    <p id="pj-desc"></p>
+    <dl class="meta">
+      <dt>Year</dt><dd id="pj-year"></dd>
+      <dt>Role</dt><dd id="pj-role"></dd>
+      <dt>Tools</dt><dd id="pj-tools"></dd>
+    </dl>
+    <a class="btn" id="pj-link" href="#">View project</a>
+  </section>
 
-<section class="quote">
-  <p class="quote__text">"HeeHee" - Michael Jackson</p>
-</section>
+</main>
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-  }
+<dialog id="lightbox" aria-label="Project image">
+  <div id="lb-body"></div>
+  <button class="btn" id="lb-close">Close</button>
+</dialog>
+
+<script>
+/* ============ CONTENT: edit these ============ */
+const CRT_AUTO_FIT = false;     // false = use the --win-*-px values in style.css. true = detect the transparent glass automatically (needs a web server).
+const CRT_WORK_ON_TOP = true;   // true = draw the work above the frame image (use when the glass isn't transparent)
+const DEBUG = true;   // shows missing-file paths on the CRT and in the console (F12). Set false before you publish.
+const EXT = "webp";   // file type of your CD case renders (assets/cd/0001.webp ...)
+// PERSONAL WORKS: CD cases on the shelf -> shown on the CRT screen
+// Cases are assets/cd/0001.webp ... 0017.webp. Work images are assets/works/0001.webp ... (same numbers).
+const WORK_COUNT = 27, WORK_IMG_EXT = "webp";
+const CD_STATES = false;   // set true once you have 0001-hover.webp / 0001-selected.webp etc.
+const WORK_TITLES = [];    // optional names, e.g. ["Poster series", "Album art"]; only used for accessibility + placeholders
+const WORKS = Array.from({length: WORK_COUNT}, (_, i) => {
+  const n = String(i + 1).padStart(4, '0');
+  return {t: WORK_TITLES[i] || `Loading Work ${i + 1}...`, cd: `assets/cd/${n}`, img: `assets/works/${n}.${WORK_IMG_EXT}`};
+});
+// PROJECTS: chosen with the dial -> shown in the bottom-right panel
+const PROJECTS = [
+  {t:"FloPipe",  href:"#", year:"2026", role:"Design", tools:"Blender, Figma", d:"Game artist for a GameJam of gemastik,  creating both the renders, graphic design, and in game 3d models and assets for the cozy sandbox-like block isometric puzzle game."},
+  {t:"Cast off!",  href:"#", year:"2026", role:"Design", tools:"Blender, Figma", d:"Created designs, renders, visual concept art and packaging for a Set Collection and Resource Management Board Game."}
+];
+// Interactive assets (all in assets/). Knob render has its indicator at north.
+const ASSETS = {knob:"assets/knob.webp", btnOff:"assets/buttonoff.webp", btnOn:"assets/buttonon.webp",
+                swOff:"assets/switchoff.webp", swOn:"assets/switchon.webp",
+                crt:"assets/crt.webp"};
+const EMAIL = "ethanaelyovan@gmail.com";
+const LINKS = [
+  {label:"Linktree",  href:"https://linktr.ee/ethanaelyovan"},
+  {label:"Instagram", href:"https://www.instagram.com/ethanaelyovan"},
+  {label:"YouTube",   href:"https://www.youtube.com/@ethanael_yovan"},
+  {label:"Pinterest", href:"https://id.pinterest.com/ethanaelyovan/"},
+  {label:"Spotify",   href:"https://open.spotify.com/user/xgeg7de1mpml0cs45s96zrsaw"},
+  {label:"Email",     copy:EMAIL}    // copies the address to the clipboard instead of linking
+];
+
+/* ============ ASSET LOADER ============ */
+// Loads off-screen first; only swaps in on success, so a missing hover file never removes the idle one.
+function loadAsset(slot, path, cb){
+  if(!path) return;
+  if(slot._want === path && slot.querySelector(':scope>img,:scope>video')) return;
+  slot._want = path;
+  const vid = /\.(webm|mp4)$/i.test(path);
+  const el = document.createElement(vid ? 'video' : 'img');
+  if(vid) Object.assign(el, {muted:true, loop:true, playsInline:true, autoplay:true, preload:'auto'});
+  else { el.alt = ''; el.draggable = false; }
+  el.addEventListener(vid ? 'loadeddata' : 'load', () => {
+    if(slot._want !== path) return;
+    slot.querySelectorAll(':scope>img,:scope>video').forEach(n => n.remove());
+    slot.prepend(el); slot.classList.add('has-asset');
+    if(vid) el.play().catch(() => {}); else if(cb) cb(el);
+  });
+  if(DEBUG) el.addEventListener('error', () => console.warn('Asset not found:', path));
+  el.src = path;
 }
+
+/* ============ CRT FRAME: auto-fit the screen to the transparent glass area ============ */
+// Flood-fills the transparent region from near the centre and returns its bounding box (or null).
+function glassRect(a, W, H, sx, sy){
+  const clear = i => a[i*4 + 3] < 40, start = sy * W + sx;
+  if(!clear(start)) return null;
+  const seen = new Uint8Array(W * H), stack = [start];
+  seen[start] = 1;
+  let x0 = W, x1 = 0, y0 = H, y1 = 0;
+  while(stack.length){
+    const i = stack.pop(), x = i % W, y = (i - x) / W;
+    if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y;
+    if(x > 0     && !seen[i-1] && clear(i-1)){ seen[i-1] = 1; stack.push(i-1); }
+    if(x < W-1   && !seen[i+1] && clear(i+1)){ seen[i+1] = 1; stack.push(i+1); }
+    if(y > 0     && !seen[i-W] && clear(i-W)){ seen[i-W] = 1; stack.push(i-W); }
+    if(y < H-1   && !seen[i+W] && clear(i+W)){ seen[i+W] = 1; stack.push(i+W); }
+  }
+  return (x1 - x0 > W * .92 || y1 - y0 > H * .92) ? null : {x0, y0, x1, y1};   // too big = not an enclosed screen
+}
+function fitCRT(img){
+  const root = document.documentElement.style;
+  root.setProperty('--crt-ar', img.naturalWidth / img.naturalHeight);
+  root.setProperty('--crt-w', img.naturalWidth);     // lets the --win-*-px values in style.css be real pixels of your file
+  root.setProperty('--crt-h', img.naturalHeight);
+  if(!CRT_AUTO_FIT){ $('crt-frame').parentElement.classList.toggle('over', CRT_WORK_ON_TOP); return; }
+  try{
+    const W = 400, H = Math.round(W * img.naturalHeight / img.naturalWidth);
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const g = c.getContext('2d', {willReadFrequently:true});
+    g.drawImage(img, 0, 0, W, H);
+    const a = g.getImageData(0, 0, W, H).data;
+    let r = null;
+    for(const fy of [.5, .42, .35, .58]){ r = glassRect(a, W, H, W >> 1, Math.round(H * fy)); if(r) break; }
+    const crt = $('crt-frame').parentElement;
+    if(!r){   // no transparent screen cutout found: the work would be hidden behind the frame, so draw it on top
+      crt.classList.add('over');
+      if(DEBUG) console.info('CRT: no transparent screen area found in crt.webp. Showing the work above the frame; tune --win-t/r/b/l in style.css.');
+      return;
+    }
+    crt.classList.remove('over');   // glass is a real cutout: the work can sit behind the frame
+    const s = crt.style;   // the .crt wrapper
+    s.setProperty('--win-l', (Math.max(0, r.x0 - 1) / W * 100) + '%');
+    s.setProperty('--win-t', (Math.max(0, r.y0 - 1) / H * 100) + '%');
+    s.setProperty('--win-r', (Math.max(0, W - 2 - r.x1) / W * 100) + '%');
+    s.setProperty('--win-b', (Math.max(0, H - 2 - r.y1) / H * 100) + '%');
+  }catch(e){}   // e.g. page opened straight from disk (file://): keeps the default window from style.css
+}
+
+/* ============ CLIPBOARD ============ */
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); return true; }catch{}
+  try{   // fallback for non-secure pages (e.g. opened from disk)
+    const ta = document.createElement('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.append(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok;
+  }catch{ return false; }
+}
+
+/* ============ BUILD ============ */
+const $ = id => document.getElementById(id);
+const btnInner = l => `<div class="slot" style="--max:72px" data-asset="${ASSETS.btnOff}"><div class="fb"><div class="fb-btn"></div></div></div><span class="cap">${l.label}</span>`;
+$('links').innerHTML = LINKS.map(l => l.copy
+  ? `<button type="button" class="ctl" data-copy="${l.copy}">${btnInner(l)}</button>`
+  : `<a class="ctl" href="${l.href}" target="_blank" rel="noopener">${btnInner(l)}</a>`).join('');
+$('shelf').innerHTML = WORKS.map((w,i) => `<button class="ctl cd" data-i="${i}" aria-label="${w.t}">
+  <div class="slot"><div class="fb"><div class="fb-cd">${w.t}</div></div></div></button>`).join('');
+if(!CD_STATES) $('shelf').classList.add('lift');
+$('tuner').dataset.asset = ASSETS.knob;
+$('theme').querySelector('.slot').dataset.asset = ASSETS.swOff;
+document.querySelectorAll('.slot[data-asset]').forEach(s => loadAsset(s, s.dataset.asset));
+loadAsset($('crt-frame'), ASSETS.crt, img => { fitCRT(img); fitWork(); });
+[ASSETS.btnOn, ASSETS.swOn].forEach(p => { new Image().src = p; });   // preload pressed states
+
+// link buttons: show the pressed (lit) image while held down
+document.querySelectorAll('#links .ctl').forEach(a => {
+  const s = a.querySelector('.slot');
+  const down = () => loadAsset(s, ASSETS.btnOn), up = () => loadAsset(s, ASSETS.btnOff);
+  a.addEventListener('pointerdown', down);
+  ['pointerup','pointerleave','pointercancel','blur'].forEach(t => a.addEventListener(t, up));
+  a.addEventListener('keydown', e => (e.key === 'Enter' || e.key === ' ') && down());
+  a.addEventListener('keyup', up);
+});
+
+// email button: copy to clipboard and say so (falls back to opening a mail app if copying fails)
+document.querySelectorAll('[data-copy]').forEach(b => {
+  const cap = b.querySelector('.cap'), label = cap.textContent;
+  cap.setAttribute('aria-live', 'polite');
+  b.addEventListener('click', async () => {
+    if(await copyText(b.dataset.copy)){ cap.textContent = 'Copied!'; setTimeout(() => cap.textContent = label, 1800); }
+    else location.href = 'mailto:' + b.dataset.copy;
+  });
+});
+
+/* ============ THEME SWITCH ============ */
+const themeBtn = $('theme'), themeSlot = themeBtn.querySelector('.slot');
+function setTheme(dark){
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  themeBtn.setAttribute('aria-pressed', dark);
+  loadAsset(themeSlot, dark ? ASSETS.swOn : ASSETS.swOff);
+  try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch{}
+}
+themeBtn.addEventListener('click', () => setTheme(themeBtn.getAttribute('aria-pressed') !== 'true'));
+let saved = null; try{ saved = localStorage.getItem('theme'); }catch{}
+setTheme(saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches);
+
+/* ============ PERSONAL WORKS: CD shelf -> CRT screen ============ */
+let wIdx = 0;
+const cds = [...document.querySelectorAll('.cd')];
+function paintCD(btn, hover){
+  const i = +btn.dataset.i, sfx = !CD_STATES ? '' : i === wIdx ? '-selected' : hover ? '-hover' : '';
+  loadAsset(btn.querySelector('.slot'), WORKS[i].cd + sfx + '.' + EXT);
+}
+cds.forEach(b => {
+  b.addEventListener('mouseenter', () => paintCD(b, true));
+  b.addEventListener('focus',      () => paintCD(b, true));
+  b.addEventListener('mouseleave', () => paintCD(b, false));
+  b.addEventListener('blur',       () => paintCD(b, false));
+  b.addEventListener('click',      () => selectWork(+b.dataset.i));
+});
+function selectWork(i){
+  wIdx = i;
+  const w = WORKS[i], img = $('crt-img'), ph = $('crt-ph');
+  cds.forEach((b,n) => { b.setAttribute('aria-current', n === i); paintCD(b, false); });
+  ph.textContent = w.t; ph.hidden = false; img.hidden = true;   // placeholder until the real image loads
+  const probe = new Image();
+  probe.onload = () => { if(wIdx === i){ img.src = w.img; img.alt = w.t; img.hidden = false; ph.hidden = true; } };
+  probe.onerror = () => {
+    if(!DEBUG) return;
+    console.warn('Work image not found:', w.img);
+    if(wIdx === i) ph.innerHTML = `${w.t}<small>not found:<br>${w.img}</small>`;
+  };
+  probe.src = w.img;
+}
+
+/* Work image fit: show the WHOLE image, centred top to bottom (black bars if needed),
+   unless it's already close to the screen's shape (widescreen), then fill the screen. */
+function fitWork(){
+  const img = $('crt-img'), box = $('crt-open').getBoundingClientRect();
+  if(img.hidden || !img.naturalWidth || !box.height) return;
+  const near = Math.abs((img.naturalWidth / img.naturalHeight) / (box.width / box.height) - 1) < .10;
+  img.style.objectFit = near ? 'cover' : 'contain';
+}
+$('crt-img').addEventListener('load', fitWork);
+addEventListener('resize', fitWork);
+
+/* lightbox: click the CRT to view large */
+const lb = $('lightbox');
+$('crt-open').addEventListener('click', () => {
+  const body = $('lb-body'), img = $('crt-img');
+  body.innerHTML = '';
+  if(!img.hidden){ const big = new Image(); big.src = img.src; big.alt = img.alt; body.append(big); }
+  else body.innerHTML = `<div class="ph">${WORKS[wIdx].t}</div>`;
+  lb.showModal();
+});
+$('lb-close').addEventListener('click', () => lb.close());
+lb.addEventListener('click', e => { if(e.target === lb) lb.close(); });
+
+/* ============ PROJECTS: dial -> bottom-right panel ============ */
+let pIdx = 0, dragging = false;
+const tuner = $('tuner'), STEP = 270 / (PROJECTS.length - 1);
+tuner.setAttribute('aria-valuemax', PROJECTS.length);
+$('pj-list').innerHTML = PROJECTS.map((p,i) => `<li><button class="pl" data-i="${i}">${p.t}</button></li>`).join('');
+const pls = [...document.querySelectorAll('.pl')];
+pls.forEach(b => b.addEventListener('click', () => selectProject(+b.dataset.i)));
+function selectProject(i){
+  pIdx = Math.max(0, Math.min(PROJECTS.length - 1, i));
+  const p = PROJECTS[pIdx];
+  tuner.style.transform = `rotate(${-135 + pIdx * STEP}deg)`;
+  tuner.style.transition = dragging ? 'none' : 'transform .2s';
+  tuner.setAttribute('aria-valuenow', pIdx + 1); tuner.setAttribute('aria-valuetext', p.t);
+  pls.forEach((b,n) => b.setAttribute('aria-current', n === pIdx));
+  $('pj-title').textContent = p.t;  $('pj-desc').textContent = p.d;
+  $('pj-year').textContent = p.year; $('pj-role').textContent = p.role; $('pj-tools').textContent = p.tools;
+  $('pj-link').href = p.href;
+}
+tuner.addEventListener('pointerdown', e => { dragging = true; tuner.setPointerCapture(e.pointerId); drag(e); });
+tuner.addEventListener('pointermove', e => dragging && drag(e));
+tuner.addEventListener('pointerup',   () => { dragging = false; selectProject(pIdx); });
+function drag(e){
+  const r = tuner.getBoundingClientRect();
+  const a = Math.atan2(e.clientX - (r.left + r.width/2), -(e.clientY - (r.top + r.height/2))) * 180 / Math.PI;
+  selectProject(Math.round((Math.max(-135, Math.min(135, a)) + 135) / STEP));
+}
+tuner.addEventListener('keydown', e => {
+  if(['ArrowRight','ArrowUp'].includes(e.key))  { selectProject(pIdx + 1); e.preventDefault(); }
+  if(['ArrowLeft','ArrowDown'].includes(e.key)) { selectProject(pIdx - 1); e.preventDefault(); }
+});
+
+selectWork(0);
+selectProject(0);
 </script>
-<script type="module" src="model-viewer.js"></script>
-
-<section class="marquee" aria-hidden="true">
-  <div class="marquee__track">
-    <span class="marquee__item">BILLIE JEAN IS NOT MY LOVER</span>
-    <span class="marquee__item">BILLIE JEAN IS NOT MY LOVER</span>
-    <span class="marquee__item">BILLIE JEAN IS NOT MY LOVER</span>
-    <span class="marquee__item">BILLIE JEAN IS NOT MY LOVER</span>
-    <span class="marquee__item">BILLIE JEAN IS NOT MY LOVER</span>
-    <span class="marquee__item">BILLIE JEAN IS NOT MY LOVER</span>
-    <span class="marquee__item">BILLIE JEAN IS NOT MY LOVER</span>
-    <span class="marquee__item">BILLIE JEAN IS NOT MY LOVER</span>
-  </div>
-</section>
-
-<section class="marquee" aria-hidden="true">
-  <div class="marquee__track">
-    <span class="marquee__item">ANNIE ARE YOU OK?</span>
-    <span class="marquee__item">ANNIE ARE YOU OK?</span>
-    <span class="marquee__item">ANNIE ARE YOU OK?</span>
-    <span class="marquee__item">ANNIE ARE YOU OK?</span>
-    <span class="marquee__item">ANNIE ARE YOU OK?</span>
-    <span class="marquee__item">ANNIE ARE YOU OK?</span>
-    <span class="marquee__item">ANNIE ARE YOU OK?</span>
-    <span class="marquee__item">ANNIE ARE YOU OK?</span>
-  </div>
-</section>
-
-<section class="marquee" aria-hidden="true">
-  <div class="marquee__track">
-    <span class="marquee__item">YOUR BUTT IS MINE</span>
-    <span class="marquee__item">YOUR BUTT IS MINE</span>
-    <span class="marquee__item">YOUR BUTT IS MINE</span>
-    <span class="marquee__item">YOUR BUTT IS MINE</span>
-    <span class="marquee__item">YOUR BUTT IS MINE</span>
-    <span class="marquee__item">YOUR BUTT IS MINE</span>
-    <span class="marquee__item">YOUR BUTT IS MINE</span>
-    <span class="marquee__item">YOUR BUTT IS MINE</span>
-  </div>
-</section>
-
-<section class="marquee" aria-hidden="true">
-  <div class="marquee__track">
-    <span class="marquee__item">WHAT ABOUT ALL THE THINGS THAT YOU SAID WAS YOURS AND MINE?</span>
-    <span class="marquee__item">WHAT ABOUT ALL THE THINGS THAT YOU SAID WAS YOURS AND MINE?</span>
-    <span class="marquee__item">WHAT ABOUT ALL THE THINGS THAT YOU SAID WAS YOURS AND MINE?</span>
-    <span class="marquee__item">WHAT ABOUT ALL THE THINGS THAT YOU SAID WAS YOURS AND MINE?</span>
-    <span class="marquee__item">WHAT ABOUT ALL THE THINGS THAT YOU SAID WAS YOURS AND MINE?</span>
-    <span class="marquee__item">WHAT ABOUT ALL THE THINGS THAT YOU SAID WAS YOURS AND MINE?</span>
-    <span class="marquee__item">WHAT ABOUT ALL THE THINGS THAT YOU SAID WAS YOURS AND MINE?</span>
-    <span class="marquee__item">WHAT ABOUT ALL THE THINGS THAT YOU SAID WAS YOURS AND MINE?</span>
-  </div>
-</section>
-
-<section class="marquee" aria-hidden="true">
-  <div class="marquee__track">
-    <span class="marquee__item">I MET HER ON MY WAY TO CHICAGO</span>
-    <span class="marquee__item">I MET HER ON MY WAY TO CHICAGO</span>
-    <span class="marquee__item">I MET HER ON MY WAY TO CHICAGO</span>
-    <span class="marquee__item">I MET HER ON MY WAY TO CHICAGO</span>
-    <span class="marquee__item">I MET HER ON MY WAY TO CHICAGO</span>
-    <span class="marquee__item">I MET HER ON MY WAY TO CHICAGO</span>
-    <span class="marquee__item">I MET HER ON MY WAY TO CHICAGO</span>
-    <span class="marquee__item">I MET HER ON MY WAY TO CHICAGO</span>
-  </div>
-</section>
-
-<section class="marquee" aria-hidden="true">
-  <div class="marquee__track">
-    <span class="marquee__item">DON'T STOP TILL YOU GET ENOUGH</span>
-    <span class="marquee__item">DON'T STOP TILL YOU GET ENOUGH</span>
-    <span class="marquee__item">DON'T STOP TILL YOU GET ENOUGH</span>
-    <span class="marquee__item">DON'T STOP TILL YOU GET ENOUGH</span>
-    <span class="marquee__item">DON'T STOP TILL YOU GET ENOUGH</span>
-    <span class="marquee__item">DON'T STOP TILL YOU GET ENOUGH</span>
-    <span class="marquee__item">DON'T STOP TILL YOU GET ENOUGH</span>
-    <span class="marquee__item">DON'T STOP TILL YOU GET ENOUGH</span>
-  </div>
-</section>
-
-<div class="lightbox" id="lightbox" hidden>
-  <button class="lightbox__close" id="lightboxClose" type="button" aria-label="Close">&times;</button>
-  <img class="lightbox__img" id="lightboxImg" src="" alt="">
-</div>
-
-<script src="script.js"></script>
-
 </body>
 </html>
