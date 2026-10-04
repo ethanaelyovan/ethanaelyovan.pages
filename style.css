@@ -26,12 +26,14 @@
   --crt-w:2400; --crt-h:1800;
   --crt-ar:1.3333;      /* CRT frame width / height (4:3) */
   --dial-shadow:-10px 10px 8px rgb(0 0 0 / .4);   /* southwest, stays put while the knob turns */
+  --cd-outline:#FFD23F;  /* outline on a hovered / keyboard-focused CD case */
   --cd-shadow:-6px 5px 6px rgb(0 0 0 / .5);      /* southwest, clipped by the shelf so it stays inside the hole */
   --lean:6deg;          /* how far the CD cases lean to the left */
   --cd-gap:2px;         /* space between cases */
+  --shelf-h:200px;      /* height of ONE shelf (desktop: set so the two shelves together are one CRT tall) */
+  --cd-h:174px;         /* displayed case height = shelf height - 26px */
+  --cd-w:calc(var(--cd-h) * var(--cd-ar));
   --cd-ar:.09375;       /* CD case width / height (75 x 800 asset) */
-  --idle-ar:1.7778;     /* idle animation width / height (16:9) */
-  --row-min:220px;      /* smallest the left rows may get on short screens */
   --display:'VCR OSD Mono',ui-monospace,'Courier New',monospace;
   --body:'VCR OSD Mono',ui-monospace,'Courier New',monospace;
 }
@@ -52,26 +54,30 @@ h2{font-size:clamp(20px,3vw,28px)}
 @media (min-width:900px){
   .rack{
     grid-template-columns:repeat(12,1fr);
-    /* The top three rows fill the screen minus --peek, so the bottom row just peeks in. */
-    --peek:clamp(56px,10svh,120px);
     --top-h:clamp(118px,12svh,150px);
-    --stage:max(calc(100svh - var(--peek) - var(--edge) - var(--top-h) - 2*var(--gap)), calc(2*var(--row-min) + var(--gap)));
-    --row-h:calc((var(--stage) - var(--gap)) / 2);
-    --cd-h:calc(var(--row-h) - 2*var(--mod-pad) - 2px - 26px);   /* displayed case height */
+    --peek:clamp(120px,16svh,200px);   /* how much of the selector row stays visible on first load */
+    --stage:max(calc(100svh - var(--edge) - var(--top-h) - 2*var(--gap) - var(--peek)), 320px);   /* tallest the CRTs may be */
+    /* One CRT: width capped so it is never taller than the stage; height follows its 4:3 shape.
+       (cqw = the width of the module it is used in; each half-screen module is a width container, see below.) */
+    --crt-box-w:min(100cqw, calc((var(--stage) - 2*var(--mod-pad) - 2px) * var(--crt-ar)));
+    --crt-box-h:calc(var(--crt-box-w) / var(--crt-ar));
+    /* Two shelves + the 10px gap between them = exactly one CRT tall, so the rows line up. */
+    --shelf-h:calc((var(--crt-box-h) - 10px) / 2);
+    --cd-h:calc(var(--shelf-h) - 26px);   /* displayed case height */
     --cd-w:calc(var(--cd-h) * var(--cd-ar));
-    grid-template-rows:minmax(var(--top-h),auto) var(--row-h) var(--row-h) auto;
+    grid-template-rows:minmax(var(--top-h),auto) auto auto;
   }
   .m{order:0}
   h1{font-size:clamp(22px,2.6vw,40px)}
   .m-name  {grid-column:1/5;  grid-row:1}
   .m-links {grid-column:5/10; grid-row:1}
   .m-status{grid-column:10/13; grid-row:1}
-  .m-shelf {grid-column:1/7;  grid-row:2}
-  .m-dial  {grid-column:1/7;  grid-row:3}
-  .m-crt   {grid-column:7/13; grid-row:2/4}
-  .m-idle  {grid-column:1/7;  grid-row:4}
-  .m-info  {grid-column:7/13; grid-row:4}
-  .m-crt .crt{width:min(100%, calc((var(--stage) - 2*var(--mod-pad) - 2px) * var(--crt-ar)))}   /* keeps 4:3, never taller than the stage */
+  .m-shelf {grid-column:1/7;  grid-row:2}    /* CD shelves  | CD display   */
+  .m-crt   {grid-column:7/13; grid-row:2}
+  .m-dial  {grid-column:1/7;  grid-row:3}    /* knob        | knob display */
+  .m-forza {grid-column:7/13; grid-row:3}
+  .m-shelf,.m-crt,.m-dial,.m-forza{container-type:inline-size}   /* lets cqw measure the half-screen width in CSS */
+  .m-crt .crt,.m-forza .crt{width:var(--crt-box-w)}   /* keeps 4:3, never taller than the stage (so the controls stay in view) */
 }
 
 /* ============ ASSET SLOTS (Blender exports load in here) ============ */
@@ -113,37 +119,27 @@ h2{font-size:clamp(20px,3vw,28px)}
 .m-status .ctl{max-width:84px;flex:none}
 
 /* shelf: the hole in the wall. CD cases stand upright side by side like books */
-.shelf{background:var(--shelf);padding:0 14px 0 calc(var(--cd-h,174px) * sin(var(--lean)) + 4px);flex:1;min-height:200px;box-shadow:inset 0 8px 20px #0007;
-  display:flex;flex-direction:row;align-items:stretch;gap:var(--cd-gap);overflow-x:auto}
+.shelf{background:var(--shelf);padding:0 14px 0 calc(var(--cd-h,174px) * sin(var(--lean)) + 4px);flex:none;height:var(--shelf-h);box-shadow:inset 0 8px 20px #0007;
+  display:flex;flex-direction:row;align-items:stretch;gap:var(--cd-gap);overflow:hidden}   /* no scrollbars: extra cases go on another shelf */
 .cd{flex:0 0 var(--cd-w,64px);width:auto;align-self:stretch;margin-top:26px;
   transform-origin:bottom left;transform:rotate(calc(var(--lean) * -1));
   filter:drop-shadow(var(--cd-shadow))}   /* leans left like dominoes, pivoting on its bottom-left corner */  /* --cd-w = width of one case */
 .cd .slot{--max:none;aspect-ratio:auto;height:100%}
 .cd .slot>img{object-position:bottom}
+.cd:hover,.cd:focus-visible{outline:3px solid var(--cd-outline);outline-offset:0;z-index:2}   /* z-index: draw over the neighbouring cases */
 /* with a single image per case (CD_STATES = false in the script), hover/selected just lift the case */
 .shelf.lift .cd{transition:transform .12s}
 .shelf.lift .cd:hover,.shelf.lift .cd:focus-visible{transform:rotate(calc(var(--lean) * -1)) translateY(-8px)}
 .shelf.lift .cd[aria-current="true"]{transform:rotate(calc(var(--lean) * -1)) translateY(-16px)}
 
-/* dial + project names */
-.dial-wrap{display:grid;grid-template-columns:minmax(120px,1fr) 1fr;gap:18px;align-items:center;width:100%}
-.pj-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:2px}
-.pl{all:unset;display:block;width:100%;padding:3px 10px;cursor:pointer;box-sizing:border-box}
-.pl::before{content:">";visibility:hidden;margin-right:.5ch}
-.pl:hover{text-decoration:underline}
-.pl:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.pl[aria-current="true"]{background:var(--switch);color:var(--light)}
-.pl[aria-current="true"]::before{visibility:visible}
-@media (max-width:480px){.dial-wrap{grid-template-columns:1fr}}
-
 /* dial */
-.dial-shadow{filter:drop-shadow(var(--dial-shadow))}   /* on the wrapper, so the shadow doesn't rotate with the knob */
+.dial-shadow{width:100%;filter:drop-shadow(var(--dial-shadow))}   /* on the wrapper, so the shadow doesn't rotate with the knob */
 .m-dial{align-items:center;justify-content:center;min-height:170px}
-#tuner{--max:min(300px,calc(var(--row-h) - 92px));cursor:grab;touch-action:none;border-radius:50%}
+#tuner{--max:min(300px,max(120px,calc(var(--crt-box-h,400px) - 110px)));cursor:grab;touch-action:none;border-radius:50%}
 #tuner:active{cursor:grabbing}
 
 /* CRT: frame asset overlays the project image */
-.m-crt{justify-content:center;align-items:center}
+.m-crt,.m-forza{justify-content:center;align-items:center}
 .crt{position:relative;width:100%;aspect-ratio:var(--crt-ar)}
 .crt-screen{all:unset;position:absolute;z-index:1;cursor:zoom-in;overflow:hidden;background:#000;
   top:var(--win-t,calc(var(--win-t-px) / var(--crt-h) * 100%));
@@ -162,14 +158,6 @@ h2{font-size:clamp(20px,3vw,28px)}
 .crt.over .crt-screen{z-index:3}   /* used when the frame's glass isn't transparent */
 .ph small{display:block;font-size:.5em;margin-top:.8em;opacity:.85;word-break:break-all}
 
-/* bottom row */
-.m-idle .slot{--max:100%;aspect-ratio:var(--idle-ar)}
-.m-info{gap:14px}
-.m-info p{max-width:56ch}
-.meta{display:grid;grid-template-columns:auto 1fr;gap:4px 18px}
-.meta dt{opacity:.65}
-.meta dd{margin:0}
-
 /* lightbox */
 dialog{border:0;padding:0;background:none;max-width:92vw;max-height:92vh;overflow:visible;margin:auto;text-align:center}   /* margin:auto centres it (the global margin reset had removed it) */
 dialog::backdrop{background:#000c}
@@ -177,5 +165,4 @@ dialog::backdrop{background:#000c}
 #lb-body .ph{position:static;width:min(90vw,900px);aspect-ratio:4/3;margin:0 auto}
 #lb-close{position:fixed;top:var(--edge);right:var(--edge)}   /* out of the flow, so the image itself sits dead centre */
 
-@keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

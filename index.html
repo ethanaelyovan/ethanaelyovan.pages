@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ethanael Yovan G. — Portfolio</title>
-<link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <!--
-  Two separate selectors: the CD shelf (personal works) drives the CRT; the dial (projects) drives the bottom-right panel.
+  Layout (desktop):  CD shelves | CD display   /   knob | knob display.  The two shelves together are one CRT tall.
+  The CD shelves drive the top-right CRT; the knob drives the lower-right CRT (assets/forza/).
   Modules are invisible grid cells (placement lives in style.css under .m-name, .m-shelf etc.).
   On screens under 900px they stack in one column in the order set by --mo.
   Assets: any <div class="slot" data-asset="path"> loads your Blender export; the .fb inside is the placeholder.
@@ -24,51 +24,42 @@
   <section class="m m-links" style="--mo:2" aria-label="Links"><div class="links" id="links"></div></section>
 
   <section class="m m-status" style="--mo:3" aria-label="Status">
-    <p><span class="led"></span>Designed with Figma and Blender.</p>
+    <p><span class="led"></span>Open to work</p>
     <button class="ctl" id="theme" aria-pressed="false" aria-label="Dark mode">
       <div class="slot" style="--max:64px"><div class="fb"><div class="fb-switch"></div></div></div>
-      <span class="cap">Theme</span>
+      <span class="cap">Dark</span>
     </button>
   </section>
 
-  <section class="m m-shelf" style="--mo:5" aria-label="Personal works"><div class="shelf" id="shelf"></div></section>
+    <section class="m m-shelf" id="shelves" style="--mo:5" aria-label="Personal works"><!-- shelves are built by the script --></section>
 
-  <section class="m m-dial" style="--mo:6" aria-label="Projects">
-    <div class="dial-wrap">
-      <div>
-        <div class="dial-shadow"><div class="slot" id="tuner" role="slider" tabindex="0" aria-label="Project selector" aria-valuemin="1" aria-valuenow="1">
-          <div class="fb"><div class="fb-dial"></div></div>
-        </div></div>
-        <span class="cap" style="text-align:center">Drag or use arrow keys</span>
+    <section class="m m-dial" style="--mo:7" aria-label="Image selector">
+      <div class="dial-shadow"><div class="slot" id="tuner" role="slider" tabindex="0" aria-label="Image selector" aria-valuemin="1" aria-valuenow="1">
+        <div class="fb"><div class="fb-dial"></div></div>
+      </div></div>
+      <span class="cap" id="dial-count"></span>
+      <span class="cap">Drag or use arrow keys</span>
+    </section>
+
+    <section class="m m-crt" style="--mo:4" aria-label="Personal work preview">
+      <div class="crt over">
+        <button class="crt-screen" id="crt-open" title="View larger" aria-label="View project image larger">
+          <img id="crt-img" alt="" hidden>
+          <div class="ph" id="crt-ph"></div>
+        </button>
+        <div class="slot crt-frame" id="crt-frame"><div class="fb"><div class="fb-crt"></div></div></div>
       </div>
-      <ul class="pj-list" id="pj-list"></ul>
-    </div>
-  </section>
+    </section>
 
-  <section class="m m-crt" style="--mo:4" aria-label="Personal work preview">
-    <div class="crt over">
-      <button class="crt-screen" id="crt-open" title="View larger" aria-label="View project image larger">
-        <img id="crt-img" alt="" hidden>
-        <div class="ph" id="crt-ph"></div>
-      </button>
-      <div class="slot crt-frame" id="crt-frame"><div class="fb"><div class="fb-crt"></div></div></div>
-    </div>
-  </section>
-
-  <section class="m m-idle" style="--mo:8" aria-hidden="true">
-    <div class="slot" data-asset="assets/idle.webm"><div class="fb"><div class="fb-dial" style="max-width:240px;max-height:240px;animation:spin 8s linear infinite"></div></div></div>
-  </section>
-
-  <section class="m m-info" style="--mo:7" aria-live="polite">
-    <h2 id="pj-title"></h2>
-    <p id="pj-desc"></p>
-    <dl class="meta">
-      <dt>Year</dt><dd id="pj-year"></dd>
-      <dt>Role</dt><dd id="pj-role"></dd>
-      <dt>Tools</dt><dd id="pj-tools"></dd>
-    </dl>
-    <a class="btn" id="pj-link" href="#">View project</a>
-  </section>
+    <section class="m m-forza" style="--mo:6" aria-label="Image viewer">
+      <div class="crt over">
+        <button class="crt-screen" id="fz-open" title="View larger" aria-label="View image larger">
+          <img id="fz-img" alt="" hidden>
+          <div class="ph" id="fz-ph"></div>
+        </button>
+        <div class="slot crt-frame" id="fz-frame"><div class="fb"><div class="fb-crt"></div></div></div>
+      </div>
+    </section>
 
 </main>
 
@@ -84,23 +75,21 @@ const CRT_WORK_ON_TOP = true;   // true = draw the work above the frame image (u
 const DEBUG = true;   // shows missing-file paths on the CRT and in the console (F12). Set false before you publish.
 const EXT = "webp";   // file type of your CD case renders (assets/cd/0001.webp ...)
 // PERSONAL WORKS: CD cases on the shelf -> shown on the CRT screen
-// Cases are assets/cd/0001.webp ... 0017.webp. Work images are assets/works/0001.webp ... (same numbers).
+// Cases are assets/cd/0001.webp ... 0027.webp. Work images are assets/works/0001.webp ... (same numbers).
 const WORK_COUNT = 27, WORK_IMG_EXT = "webp";
 const CD_STATES = false;   // set true once you have 0001-hover.webp / 0001-selected.webp etc.
 const WORK_TITLES = [];    // optional names, e.g. ["Poster series", "Album art"]; only used for accessibility + placeholders
 const WORKS = Array.from({length: WORK_COUNT}, (_, i) => {
   const n = String(i + 1).padStart(4, '0');
-  return {t: WORK_TITLES[i] || `Loading Work ${i + 1}...`, cd: `assets/cd/${n}`, img: `assets/works/${n}.${WORK_IMG_EXT}`};
+  return {t: WORK_TITLES[i] || `Work ${i + 1}`, cd: `assets/cd/${n}`, img: `assets/works/${n}.${WORK_IMG_EXT}`};
 });
-// PROJECTS: chosen with the dial -> shown in the bottom-right panel
-const PROJECTS = [
-  {t:"FloPipe",  href:"#", year:"2026", role:"Design", tools:"Blender, Figma", d:"Game artist for a GameJam of gemastik,  creating both the renders, graphic design, and in game 3d models and assets for the cozy sandbox-like block isometric puzzle game."},
-  {t:"Cast off!",  href:"#", year:"2026", role:"Design", tools:"Blender, Figma", d:"Created designs, renders, visual concept art and packaging for a Set Collection and Resource Management Board Game."}
-];
+// KNOB -> second CRT: assets/forza/imagef1.webp ... imagef111.webp
+const FORZA_COUNT = 111;
+const forzaPath = n => `assets/forza/imagef${n}.webp`;
 // Interactive assets (all in assets/). Knob render has its indicator at north.
 const ASSETS = {knob:"assets/knob.webp", btnOff:"assets/buttonoff.webp", btnOn:"assets/buttonon.webp",
                 swOff:"assets/switchoff.webp", swOn:"assets/switchon.webp",
-                crt:"assets/crt.webp"};
+                crt:"assets/crt.webp", crtDark:"assets/crtdark.webp"};   // crtdark.webp is used in dark mode
 const EMAIL = "ethanaelyovan@gmail.com";
 const LINKS = [
   {label:"Linktree",  href:"https://linktr.ee/ethanaelyovan"},
@@ -149,12 +138,12 @@ function glassRect(a, W, H, sx, sy){
   }
   return (x1 - x0 > W * .92 || y1 - y0 > H * .92) ? null : {x0, y0, x1, y1};   // too big = not an enclosed screen
 }
-function fitCRT(img){
+function fitCRT(img, crt){   // crt = the .crt wrapper this frame belongs to
   const root = document.documentElement.style;
   root.setProperty('--crt-ar', img.naturalWidth / img.naturalHeight);
   root.setProperty('--crt-w', img.naturalWidth);     // lets the --win-*-px values in style.css be real pixels of your file
   root.setProperty('--crt-h', img.naturalHeight);
-  if(!CRT_AUTO_FIT){ $('crt-frame').parentElement.classList.toggle('over', CRT_WORK_ON_TOP); return; }
+  if(!CRT_AUTO_FIT){ crt.classList.toggle('over', CRT_WORK_ON_TOP); return; }
   try{
     const W = 400, H = Math.round(W * img.naturalHeight / img.naturalWidth);
     const c = document.createElement('canvas'); c.width = W; c.height = H;
@@ -163,7 +152,6 @@ function fitCRT(img){
     const a = g.getImageData(0, 0, W, H).data;
     let r = null;
     for(const fy of [.5, .42, .35, .58]){ r = glassRect(a, W, H, W >> 1, Math.round(H * fy)); if(r) break; }
-    const crt = $('crt-frame').parentElement;
     if(!r){   // no transparent screen cutout found: the work would be hidden behind the frame, so draw it on top
       crt.classList.add('over');
       if(DEBUG) console.info('CRT: no transparent screen area found in crt.webp. Showing the work above the frame; tune --win-t/r/b/l in style.css.');
@@ -189,17 +177,55 @@ async function copyText(t){
 
 /* ============ BUILD ============ */
 const $ = id => document.getElementById(id);
+const SCREENS = {   // the two CRT screens
+  works: {img:$('crt-img'), ph:$('crt-ph'), open:$('crt-open')},
+  forza: {img:$('fz-img'),  ph:$('fz-ph'),  open:$('fz-open')}
+};
+// Shows an image on a CRT. The previous image stays up until the new one has loaded (no flicker while turning the knob).
+function showOnScreen(s, path, label, isCurrent){
+  if(s.img.hidden) s.ph.textContent = label;
+  const probe = new Image();
+  probe.onload = () => { if(!isCurrent()) return; s.img.src = path; s.img.alt = label; s.img.hidden = false; s.ph.hidden = true; };
+  probe.onerror = () => {
+    if(!isCurrent()) return;
+    s.img.hidden = true; s.ph.hidden = false;
+    s.ph.innerHTML = DEBUG ? `${label}<small>not found:<br>${path}</small>` : label;
+    if(DEBUG) console.warn('Image not found:', path);
+  };
+  probe.src = path;
+}
 const btnInner = l => `<div class="slot" style="--max:72px" data-asset="${ASSETS.btnOff}"><div class="fb"><div class="fb-btn"></div></div></div><span class="cap">${l.label}</span>`;
 $('links').innerHTML = LINKS.map(l => l.copy
   ? `<button type="button" class="ctl" data-copy="${l.copy}">${btnInner(l)}</button>`
   : `<a class="ctl" href="${l.href}" target="_blank" rel="noopener">${btnInner(l)}</a>`).join('');
-$('shelf').innerHTML = WORKS.map((w,i) => `<button class="ctl cd" data-i="${i}" aria-label="${w.t}">
-  <div class="slot"><div class="fb"><div class="fb-cd">${w.t}</div></div></div></button>`).join('');
-if(!CD_STATES) $('shelf').classList.add('lift');
+const shelves = $('shelves');
+const cds = WORKS.map((w, i) => {   // one button per CD case
+  const b = document.createElement('button');
+  b.className = 'ctl cd'; b.tabIndex = i === 0 ? 0 : -1;   // roving tabindex: Tab enters the shelf once, arrows move along it
+  b.dataset.i = i; b.setAttribute('aria-label', w.t);
+  b.innerHTML = `<div class="slot"><div class="fb"><div class="fb-cd">${w.t}</div></div></div>`;
+  return b;
+});
+
+/* Shelves: always two (more only if a very narrow screen needs it), with the cases shared out evenly. No scrolling. */
+function layoutShelves(){
+  const active = cds.includes(document.activeElement) ? document.activeElement : null;   // keep keyboard focus through a re-flow
+  shelves.innerHTML = '';
+  const make = () => { const s = document.createElement('div'); s.className = 'shelf' + (CD_STATES ? '' : ' lift'); shelves.append(s); return s; };
+  const first = make();
+  first.append(...cds);   // measure how many fit on one shelf
+  const cs = getComputedStyle(first), w = parseFloat(getComputedStyle(cds[0]).width), gap = parseFloat(cs.columnGap) || 0;
+  const avail = first.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const cap = Math.max(1, Math.floor((avail + gap) / (w + gap)));
+  const count = Math.max(2, Math.ceil(cds.length / cap)), per = Math.ceil(cds.length / count);
+  for(let s = 1; s < count; s++) make().append(...cds.slice(s * per, (s + 1) * per));   // the rest move down; the first shelf keeps the first `per`
+  if(active) active.focus({preventScroll:true});
+}
+let relayout = 0;
+addEventListener('resize', () => { cancelAnimationFrame(relayout); relayout = requestAnimationFrame(layoutShelves); });
 $('tuner').dataset.asset = ASSETS.knob;
 $('theme').querySelector('.slot').dataset.asset = ASSETS.swOff;
 document.querySelectorAll('.slot[data-asset]').forEach(s => loadAsset(s, s.dataset.asset));
-loadAsset($('crt-frame'), ASSETS.crt, img => { fitCRT(img); fitWork(); });
 [ASSETS.btnOn, ASSETS.swOn].forEach(p => { new Image().src = p; });   // preload pressed states
 
 // link buttons: show the pressed (lit) image while held down
@@ -228,6 +254,7 @@ function setTheme(dark){
   document.documentElement.dataset.theme = dark ? 'dark' : 'light';
   themeBtn.setAttribute('aria-pressed', dark);
   loadAsset(themeSlot, dark ? ASSETS.swOn : ASSETS.swOff);
+  document.querySelectorAll('.crt-frame').forEach(f => loadAsset(f, dark ? ASSETS.crtDark : ASSETS.crt, img => { fitCRT(img, f.parentElement); fitAll(); }));
   try{ localStorage.setItem('theme', dark ? 'dark' : 'light'); }catch{}
 }
 themeBtn.addEventListener('click', () => setTheme(themeBtn.getAttribute('aria-pressed') !== 'true'));
@@ -236,7 +263,6 @@ setTheme(saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').m
 
 /* ============ PERSONAL WORKS: CD shelf -> CRT screen ============ */
 let wIdx = 0;
-const cds = [...document.querySelectorAll('.cd')];
 function paintCD(btn, hover){
   const i = +btn.dataset.i, sfx = !CD_STATES ? '' : i === wIdx ? '-selected' : hover ? '-hover' : '';
   loadAsset(btn.querySelector('.slot'), WORKS[i].cd + sfx + '.' + EXT);
@@ -246,79 +272,82 @@ cds.forEach(b => {
   b.addEventListener('focus',      () => paintCD(b, true));
   b.addEventListener('mouseleave', () => paintCD(b, false));
   b.addEventListener('blur',       () => paintCD(b, false));
-  b.addEventListener('click',      () => selectWork(+b.dataset.i));
+  b.addEventListener('click',      () => { selectWork(+b.dataset.i); b.focus(); });   // focus so the arrow keys work right after a click
 });
 function selectWork(i){
   wIdx = i;
-  const w = WORKS[i], img = $('crt-img'), ph = $('crt-ph');
-  cds.forEach((b,n) => { b.setAttribute('aria-current', n === i); paintCD(b, false); });
-  ph.textContent = w.t; ph.hidden = false; img.hidden = true;   // placeholder until the real image loads
-  const probe = new Image();
-  probe.onload = () => { if(wIdx === i){ img.src = w.img; img.alt = w.t; img.hidden = false; ph.hidden = true; } };
-  probe.onerror = () => {
-    if(!DEBUG) return;
-    console.warn('Work image not found:', w.img);
-    if(wIdx === i) ph.innerHTML = `${w.t}<small>not found:<br>${w.img}</small>`;
-  };
-  probe.src = w.img;
+  const w = WORKS[i];
+  cds.forEach((b,n) => { b.setAttribute('aria-current', n === i); b.tabIndex = n === i ? 0 : -1; paintCD(b, false); });
+  showOnScreen(SCREENS.works, w.img, w.t, () => wIdx === i);
 }
 
-/* Work image fit: show the WHOLE image, centred top to bottom (black bars if needed),
+/* CD shelf keyboard: Left / Right = previous / next case (selects it), Home / End = first / last */
+shelves.addEventListener('keydown', e => {
+  const cur = e.target.closest ? e.target.closest('.cd') : null;
+  if(!cur) return;
+  let n = {ArrowRight: +cur.dataset.i + 1, ArrowLeft: +cur.dataset.i - 1, Home: 0, End: cds.length - 1}[e.key];
+  if(n === undefined) return;
+  e.preventDefault();
+  n = Math.max(0, Math.min(cds.length - 1, n));
+  selectWork(n); cds[n].focus();
+});
+
+/* Image fit: show the WHOLE image, centred top to bottom (black bars if needed),
    unless it's already close to the screen's shape (widescreen), then fill the screen. */
-function fitWork(){
-  const img = $('crt-img'), box = $('crt-open').getBoundingClientRect();
+function fitWork(img){
+  const box = img.parentElement.getBoundingClientRect();
   if(img.hidden || !img.naturalWidth || !box.height) return;
   const near = Math.abs((img.naturalWidth / img.naturalHeight) / (box.width / box.height) - 1) < .10;
   img.style.objectFit = near ? 'cover' : 'contain';
 }
-$('crt-img').addEventListener('load', fitWork);
-addEventListener('resize', fitWork);
+const fitAll = () => Object.values(SCREENS).forEach(s => fitWork(s.img));
+Object.values(SCREENS).forEach(s => s.img.addEventListener('load', () => fitWork(s.img)));
+addEventListener('resize', fitAll);
 
-/* lightbox: click the CRT to view large */
+/* lightbox: click a CRT to view its image large */
 const lb = $('lightbox');
-$('crt-open').addEventListener('click', () => {
-  const body = $('lb-body'), img = $('crt-img');
+Object.values(SCREENS).forEach(s => s.open.addEventListener('click', () => {
+  const body = $('lb-body');
   body.innerHTML = '';
-  if(!img.hidden){ const big = new Image(); big.src = img.src; big.alt = img.alt; body.append(big); }
-  else body.innerHTML = `<div class="ph">${WORKS[wIdx].t}</div>`;
+  if(!s.img.hidden){ const big = new Image(); big.src = s.img.src; big.alt = s.img.alt; body.append(big); }
+  else body.innerHTML = `<div class="ph">${s.ph.innerHTML}</div>`;
   lb.showModal();
-});
+}));
 $('lb-close').addEventListener('click', () => lb.close());
 lb.addEventListener('click', e => { if(e.target === lb) lb.close(); });
 
-/* ============ PROJECTS: dial -> bottom-right panel ============ */
-let pIdx = 0, dragging = false;
-const tuner = $('tuner'), STEP = 270 / (PROJECTS.length - 1);
-tuner.setAttribute('aria-valuemax', PROJECTS.length);
-$('pj-list').innerHTML = PROJECTS.map((p,i) => `<li><button class="pl" data-i="${i}">${p.t}</button></li>`).join('');
-const pls = [...document.querySelectorAll('.pl')];
-pls.forEach(b => b.addEventListener('click', () => selectProject(+b.dataset.i)));
-function selectProject(i){
-  pIdx = Math.max(0, Math.min(PROJECTS.length - 1, i));
-  const p = PROJECTS[pIdx];
-  tuner.style.transform = `rotate(${-135 + pIdx * STEP}deg)`;
+/* ============ KNOB: selects the image on the bottom CRT ============ */
+let fIdx = 0, dragging = false;
+const tuner = $('tuner'), STEP = 270 / (FORZA_COUNT - 1);   // the knob sweeps 270 degrees across all images
+tuner.setAttribute('aria-valuemax', FORZA_COUNT);
+function selectForza(i){
+  fIdx = Math.max(0, Math.min(FORZA_COUNT - 1, i));
+  const cur = fIdx, n = cur + 1;
+  tuner.style.transform = `rotate(${-135 + cur * STEP}deg)`;
   tuner.style.transition = dragging ? 'none' : 'transform .2s';
-  tuner.setAttribute('aria-valuenow', pIdx + 1); tuner.setAttribute('aria-valuetext', p.t);
-  pls.forEach((b,n) => b.setAttribute('aria-current', n === pIdx));
-  $('pj-title').textContent = p.t;  $('pj-desc').textContent = p.d;
-  $('pj-year').textContent = p.year; $('pj-role').textContent = p.role; $('pj-tools').textContent = p.tools;
-  $('pj-link').href = p.href;
+  tuner.setAttribute('aria-valuenow', n); tuner.setAttribute('aria-valuetext', `Image ${n} of ${FORZA_COUNT}`);
+  $('dial-count').textContent = `${n} / ${FORZA_COUNT}`;
+  showOnScreen(SCREENS.forza, forzaPath(n), `Image ${n}`, () => fIdx === cur);
+  [n - 1, n + 1].forEach(k => { if(k >= 1 && k <= FORZA_COUNT) new Image().src = forzaPath(k); });   // preload neighbours
 }
 tuner.addEventListener('pointerdown', e => { dragging = true; tuner.setPointerCapture(e.pointerId); drag(e); });
 tuner.addEventListener('pointermove', e => dragging && drag(e));
-tuner.addEventListener('pointerup',   () => { dragging = false; selectProject(pIdx); });
+tuner.addEventListener('pointerup',   () => { dragging = false; selectForza(fIdx); });
 function drag(e){
   const r = tuner.getBoundingClientRect();
   const a = Math.atan2(e.clientX - (r.left + r.width/2), -(e.clientY - (r.top + r.height/2))) * 180 / Math.PI;
-  selectProject(Math.round((Math.max(-135, Math.min(135, a)) + 135) / STEP));
+  selectForza(Math.round((Math.max(-135, Math.min(135, a)) + 135) / STEP));
 }
 tuner.addEventListener('keydown', e => {
-  if(['ArrowRight','ArrowUp'].includes(e.key))  { selectProject(pIdx + 1); e.preventDefault(); }
-  if(['ArrowLeft','ArrowDown'].includes(e.key)) { selectProject(pIdx - 1); e.preventDefault(); }
+  const k = {ArrowRight:1, ArrowUp:1, ArrowLeft:-1, ArrowDown:-1, PageUp:10, PageDown:-10}[e.key];
+  if(k){ selectForza(fIdx + k); e.preventDefault(); }
+  if(e.key === 'Home'){ selectForza(0); e.preventDefault(); }
+  if(e.key === 'End'){ selectForza(FORZA_COUNT - 1); e.preventDefault(); }
 });
 
 selectWork(0);
-selectProject(0);
+selectForza(0);
+layoutShelves();
 </script>
 </body>
 </html>
