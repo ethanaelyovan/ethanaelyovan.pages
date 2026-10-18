@@ -8,8 +8,9 @@
 </head>
 <body>
 <!--
-  Layout (desktop):  CD shelves | CD display   /   knob | knob display.  The two shelves together are one CRT tall.
-  The CD shelves drive the top-right CRT; the knob drives the lower-right CRT (assets/forza/).
+  Layout (desktop):  CD shelves | CD display  /  (free) | forza display  /  (free) | knob.  The two shelves together are one CRT tall.
+  The CD shelves drive the top-right CRT. The knob (under the lower-right CRT) drives that CRT's forza photos;
+  the photo number is shown on the screen itself.
   Modules are invisible grid cells (placement lives in style.css under .m-name, .m-shelf etc.).
   On screens under 900px they stack in one column in the order set by --mo.
   Assets: any <div class="slot" data-asset="path"> loads your Blender export; the .fb inside is the placeholder.
@@ -33,13 +34,6 @@
 
     <section class="m m-shelf" id="shelves" style="--mo:5" aria-label="Personal works"><!-- shelves are built by the script --></section>
 
-    <section class="m m-dial" style="--mo:7" aria-label="Image selector">
-      <div class="dial-shadow"><div class="slot" id="tuner" role="slider" tabindex="0" aria-label="Image selector" aria-valuemin="1" aria-valuenow="1">
-        <div class="fb"><div class="fb-dial"></div></div>
-      </div></div>
-      <span class="cap" id="dial-count"></span>
-      <span class="cap">Drag or use arrow keys</span>
-    </section>
 
     <section class="m m-crt" style="--mo:4" aria-label="Personal work preview">
       <div class="crt over">
@@ -56,9 +50,17 @@
         <button class="crt-screen" id="fz-open" title="View larger" aria-label="View image larger">
           <img id="fz-img" alt="" hidden>
           <div class="ph" id="fz-ph"></div>
+          <div class="osd" id="fz-osd"></div>
         </button>
         <div class="slot crt-frame" id="fz-frame"><div class="fb"><div class="fb-crt"></div></div></div>
       </div>
+    </section>
+
+    <section class="m m-dial" style="--mo:7" aria-label="Photo selector">
+      <div class="dial-shadow"><div class="slot" id="tuner" role="slider" tabindex="0" aria-label="Photo selector" aria-valuemin="1" aria-valuenow="1">
+        <div class="fb"><div class="fb-dial"></div></div>
+      </div></div>
+      <span class="cap">Drag or use arrow keys</span>
     </section>
 
 </main>
@@ -83,7 +85,7 @@ const WORKS = Array.from({length: WORK_COUNT}, (_, i) => {
   const n = String(i + 1).padStart(4, '0');
   return {t: WORK_TITLES[i] || `Work ${i + 1}`, cd: `assets/cd/${n}`, img: `assets/works/${n}.${WORK_IMG_EXT}`};
 });
-// KNOB -> second CRT: assets/forza/imagef1.webp ... imagef111.webp
+// KNOB -> lower-right CRT: assets/forza/imagef1.webp ... imagef111.webp
 const FORZA_COUNT = 111;
 const forzaPath = n => `assets/forza/imagef${n}.webp`;
 // Interactive assets (all in assets/). Knob render has its indicator at north.
@@ -194,7 +196,7 @@ function showOnScreen(s, path, label, isCurrent){
   };
   probe.src = path;
 }
-const btnInner = l => `<div class="slot" style="--max:72px" data-asset="${ASSETS.btnOff}"><div class="fb"><div class="fb-btn"></div></div></div><span class="cap">${l.label}</span>`;
+const btnInner = l => `<div class="slot" style="--max:60px" data-asset="${ASSETS.btnOff}"><div class="fb"><div class="fb-btn"></div></div></div><span class="cap">${l.label}</span>`;
 $('links').innerHTML = LINKS.map(l => l.copy
   ? `<button type="button" class="ctl" data-copy="${l.copy}">${btnInner(l)}</button>`
   : `<a class="ctl" href="${l.href}" target="_blank" rel="noopener">${btnInner(l)}</a>`).join('');
@@ -316,17 +318,17 @@ Object.values(SCREENS).forEach(s => s.open.addEventListener('click', () => {
 $('lb-close').addEventListener('click', () => lb.close());
 lb.addEventListener('click', e => { if(e.target === lb) lb.close(); });
 
-/* ============ KNOB: selects the image on the bottom CRT ============ */
+/* ============ KNOB: selects the photo on the lower-right CRT ============ */
 let fIdx = 0, dragging = false;
-const tuner = $('tuner'), STEP = 270 / (FORZA_COUNT - 1);   // the knob sweeps 270 degrees across all images
+const tuner = $('tuner'), STEP = 270 / (FORZA_COUNT - 1);   // the knob sweeps 270 degrees across all photos
 tuner.setAttribute('aria-valuemax', FORZA_COUNT);
 function selectForza(i){
   fIdx = Math.max(0, Math.min(FORZA_COUNT - 1, i));
   const cur = fIdx, n = cur + 1;
   tuner.style.transform = `rotate(${-135 + cur * STEP}deg)`;
   tuner.style.transition = dragging ? 'none' : 'transform .2s';
-  tuner.setAttribute('aria-valuenow', n); tuner.setAttribute('aria-valuetext', `Image ${n} of ${FORZA_COUNT}`);
-  $('dial-count').textContent = `${n} / ${FORZA_COUNT}`;
+  tuner.setAttribute('aria-valuenow', n); tuner.setAttribute('aria-valuetext', `Photo ${n} of ${FORZA_COUNT}`);
+  $('fz-osd').textContent = `${n} / ${FORZA_COUNT}`;   // on-screen display over the CRT
   showOnScreen(SCREENS.forza, forzaPath(n), `Image ${n}`, () => fIdx === cur);
   [n - 1, n + 1].forEach(k => { if(k >= 1 && k <= FORZA_COUNT) new Image().src = forzaPath(k); });   // preload neighbours
 }
