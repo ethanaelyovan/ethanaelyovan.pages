@@ -35,6 +35,8 @@
   --shelf-h:200px;      /* height of ONE shelf (desktop: set so the two shelves together are one CRT tall) */
   --cd-h:174px;         /* displayed case height = shelf height - 26px */
   --cd-w:calc(var(--cd-h) * var(--cd-ar));
+  --car-overlap:20cqw; /* CAR SIZE + OVERLAP: how far each car tucks behind the one on its right. Bigger = cars get bigger AND overlap more.
+                           (2.4cqw = about 11% overlap; try 5cqw ~ 21%, 8cqw ~ 30%, 12cqw ~ 41%) */
   --cd-ar:.1575;        /* case width / height (126 x 800 asset) */
   --display:'VCR OSD Mono',ui-monospace,'Courier New',monospace;
   --body:'VCR OSD Mono',ui-monospace,'Courier New',monospace;
@@ -76,9 +78,11 @@ h2{font-size:clamp(20px,3vw,28px)}
   .m-status{grid-column:10/13; grid-row:1}
   .m-shelf {grid-column:1/7;  grid-row:2}    /* CD shelves  | CD display   */
   .m-crt   {grid-column:7/13; grid-row:2}
-  .m-forza {grid-column:7/13; grid-row:3}    /* (bottom-left is free for the projects display) */
+  .m-cars  {grid-column:1/7;  grid-row:3}    /* car sprites (double shelf) | forza display */
+  .m-forza {grid-column:7/13; grid-row:3}
   .m-dial  {grid-column:7/13; grid-row:4}    /* knob, under the lower-right CRT */
-  .m-shelf,.m-crt,.m-forza{container-type:inline-size}   /* lets cqw measure the half-screen width in CSS */
+  .m-cars{align-self:start}
+  .m-shelf,.m-cars,.m-crt,.m-forza{container-type:inline-size}   /* lets cqw measure the half-screen width in CSS */
   .m-crt .crt,.m-forza .crt{width:var(--crt-box-w)}   /* keeps 4:3, never taller than the stage (so the controls stay in view) */
 }
 
@@ -130,12 +134,32 @@ h2{font-size:clamp(20px,3vw,28px)}
 .cd .slot>img{object-position:bottom}
 .cd:hover,.cd:focus-visible{outline:3px solid var(--cd-outline);outline-offset:0;z-index:2}   /* z-index: draw over the neighbouring cases */
 /* with a single image per case (CD_STATES = false in the script), hover/selected just lift the case */
+/* cars: a diecast display. Two shelves, sprites standing on the floor and overlapping left to right (right one in front). */
+.shelf.cars{padding:0 10px;gap:0;align-items:stretch;height:calc(var(--shelf-h) / 2)}   /* car shelves are half as tall as the cassette shelves */
+/* every car gets the same width: whatever lets a full shelf (--per cars) just fit, given the overlap */
+.shelf.cars{--car-w:calc((100cqw - 20px + (var(--per,5) - 1) * var(--car-overlap)) / var(--per,5));justify-content:flex-start}
+.car{flex:0 0 var(--car-w);min-width:0;align-self:stretch;margin-left:calc(var(--car-overlap) * -1);filter:drop-shadow(var(--cd-shadow))}
+.car:first-child{margin-left:0}
+/* size comes from the car's WIDTH only (never shrunk by the shelf height); the car stands on the shelf floor */
+.car .slot{--max:none;aspect-ratio:auto;height:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.car .slot>img{flex:none;height:auto;transition:filter .2s}
+.car .fb{align-items:end}
+.fb-car{width:100%;height:46%;display:grid;place-items:center;background:var(--switch);color:var(--light);font:400 15px var(--display);border-bottom:3px solid #0006}
+.car[aria-current="true"] .fb-car{background:var(--accent);color:var(--deep)}
+/* selected car goes black and white */
+.car[aria-current="true"] .slot>img{filter:grayscale(1)}
+/* hover / keyboard focus: yellow glow around the sprite */
+.car:hover .slot>img,.car:focus-visible .slot>img{filter:drop-shadow(0 0 3px var(--cd-outline)) drop-shadow(0 0 3px var(--cd-outline))}
+.car[aria-current="true"]:hover .slot>img,.car[aria-current="true"]:focus-visible .slot>img{filter:grayscale(1) drop-shadow(0 0 3px var(--cd-outline)) drop-shadow(0 0 3px var(--cd-outline))}
+.car:hover .fb-car,.car:focus-visible .fb-car{outline:2px solid var(--cd-outline);outline-offset:-2px}
+.car:focus-visible{outline:none}
 .shelf.lift .cd{transition:transform .12s}
 .shelf.lift .cd:hover,.shelf.lift .cd:focus-visible{transform:rotate(calc(var(--lean) * -1)) translateY(-8px)}
 .shelf.lift .cd[aria-current="true"]{transform:rotate(calc(var(--lean) * -1)) translateY(-16px)}
 
 /* dial */
 .dial-shadow{width:100%;filter:drop-shadow(var(--dial-shadow))}   /* on the wrapper, so the shadow doesn't rotate with the knob */
+.m-cars{container-type:inline-size}
 .m-dial{align-items:center;justify-content:center;container-type:inline-size}
 .m-dial .cap{text-align:center}
 #tuner{--max:min(255px,60cqw);cursor:grab;touch-action:none;border-radius:50%}
@@ -162,7 +186,7 @@ h2{font-size:clamp(20px,3vw,28px)}
 .ph small{display:block;font-size:.5em;margin-top:.8em;opacity:.85;word-break:break-all}
 
 /* on-screen display over the lower-right CRT: which photo you're on */
-.osd{position:absolute;left:4cqw;top:4cqh;pointer-events:none;z-index:2;font:400 clamp(11px,5cqw,28px)/1 var(--display);
+.osd{position:absolute;left:4cqw;top:4cqh;pointer-events:none;z-index:2;white-space:pre-line;font:400 clamp(11px,5cqw,28px)/1.15 var(--display);
   color:var(--light);text-shadow:2px 2px 0 #000,0 0 8px #000a;letter-spacing:.04em}
 
 /* lightbox */

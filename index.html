@@ -8,9 +8,9 @@
 </head>
 <body>
 <!--
-  Layout (desktop):  CD shelves | CD display  /  (free) | forza display  /  (free) | knob.  The two shelves together are one CRT tall.
-  The CD shelves drive the top-right CRT. The knob (under the lower-right CRT) drives that CRT's forza photos;
-  the photo number is shown on the screen itself.
+  Layout (desktop):  CD shelves | CD display  /  car shelves | forza display  /  (free) | knob.  Each pair of shelves is one CRT tall.
+  The CD shelves drive the top-right CRT. Clicking a car picks a folder in assets/forza/; the knob then flips through that car's photos.
+  The car name and photo number are shown on the screen itself.
   Modules are invisible grid cells (placement lives in style.css under .m-name, .m-shelf etc.).
   On screens under 900px they stack in one column in the order set by --mo.
   Assets: any <div class="slot" data-asset="path"> loads your Blender export; the .fb inside is the placeholder.
@@ -25,7 +25,7 @@
   <section class="m m-links" style="--mo:2" aria-label="Links"><div class="links" id="links"></div></section>
 
   <section class="m m-status" style="--mo:3" aria-label="Status">
-    <p><span class="led"></span>Open to work</p>
+    <p><span class="led"></span>website still under development</p>
     <button class="ctl" id="theme" aria-pressed="false" aria-label="Dark mode">
       <div class="slot" style="--max:64px"><div class="fb"><div class="fb-switch"></div></div></div>
       <span class="cap">Dark</span>
@@ -45,6 +45,8 @@
       </div>
     </section>
 
+    <section class="m m-cars" id="cars" style="--mo:7" aria-label="Cars"><!-- shelves are built by the script --></section>
+
     <section class="m m-forza" style="--mo:6" aria-label="Image viewer">
       <div class="crt over">
         <button class="crt-screen" id="fz-open" title="View larger" aria-label="View image larger">
@@ -56,7 +58,7 @@
       </div>
     </section>
 
-    <section class="m m-dial" style="--mo:7" aria-label="Photo selector">
+    <section class="m m-dial" style="--mo:8" aria-label="Photo selector">
       <div class="dial-shadow"><div class="slot" id="tuner" role="slider" tabindex="0" aria-label="Photo selector" aria-valuemin="1" aria-valuenow="1">
         <div class="fb"><div class="fb-dial"></div></div>
       </div></div>
@@ -70,6 +72,7 @@
   <button class="btn" id="lb-close">Close</button>
 </dialog>
 
+<script src="assets/forza/manifest.js"></script>   <!-- photo lists, made by make-forza-manifest.ps1 / .js -->
 <script>
 /* ============ CONTENT: edit these ============ */
 const CRT_AUTO_FIT = false;     // false = use the --win-*-px values in style.css. true = detect the transparent glass automatically (needs a web server).
@@ -85,9 +88,15 @@ const WORKS = Array.from({length: WORK_COUNT}, (_, i) => {
   const n = String(i + 1).padStart(4, '0');
   return {t: WORK_TITLES[i] || `Work ${i + 1}`, cd: `assets/cd/${n}`, img: `assets/works/${n}.${WORK_IMG_EXT}`};
 });
-// KNOB -> lower-right CRT: assets/forza/imagef1.webp ... imagef111.webp
-const FORZA_COUNT = 111;
-const forzaPath = n => `assets/forza/imagef${n}.webp`;
+// CARS: sprites are assets/forza/<name>.webp, photos are in the folder assets/forza/<name>/ (listed in assets/forza/manifest.js).
+// Order here = order on the shelves (first half on the top shelf). A car with no sprite shows a labelled tile.
+const CARS = ['ae86', 'amg', 'gtr', 'lancer', 'm3', 'quattro', 'rexy', 'supra', 'others'];
+const CAR_LABELS = {};   // optional nicer names, e.g. {gtr:'GT-R', lancer:'Lancer Evo'}
+const carLabel  = id => CAR_LABELS[id] || id.toUpperCase();
+const carSprite = id => `assets/forza/${id}.webp`;
+const MANIFEST  = window.FORZA_MANIFEST || {};
+const photosOf  = id => MANIFEST[id] || [];
+const photoPath = (id, file) => `assets/forza/${id}/${file}`;
 // Interactive assets (all in assets/). Knob render has its indicator at north.
 const ASSETS = {knob:"assets/knob.webp", btnOff:"assets/buttonoff.webp", btnOn:"assets/buttonon.webp",
                 swOff:"assets/switchoff.webp", swOn:"assets/switchon.webp",
@@ -209,6 +218,22 @@ const cds = WORKS.map((w, i) => {   // one button per CD case
   return b;
 });
 
+/* Car shelves: two shelves, the cars split evenly between them. */
+const carBtns = CARS.map((id, i) => {
+  const b = document.createElement('button');
+  b.className = 'ctl car'; b.tabIndex = i === 0 ? 0 : -1; b.dataset.i = i; b.setAttribute('aria-label', carLabel(id));
+  b.innerHTML = `<div class="slot" data-asset="${carSprite(id)}"><div class="fb"><div class="fb-car">${carLabel(id)}</div></div></div>`;
+  return b;
+});
+{
+  const host = $('cars'), per = Math.ceil(CARS.length / 2);
+  host.style.setProperty('--per', per);   // cars per full shelf: sets the car width in style.css
+  [carBtns.slice(0, per), carBtns.slice(per)].forEach(row => {
+    const s = document.createElement('div'); s.className = 'shelf cars'; s.append(...row); host.append(s);
+  });
+  carBtns.forEach(b => loadAsset(b.querySelector('.slot'), b.querySelector('.slot').dataset.asset));
+}
+
 /* Shelves: always two (more only if a very narrow screen needs it), with the cases shared out evenly. No scrolling. */
 function layoutShelves(){
   const active = cds.includes(document.activeElement) ? document.activeElement : null;   // keep keyboard focus through a re-flow
@@ -318,37 +343,67 @@ Object.values(SCREENS).forEach(s => s.open.addEventListener('click', () => {
 $('lb-close').addEventListener('click', () => lb.close());
 lb.addEventListener('click', e => { if(e.target === lb) lb.close(); });
 
-/* ============ KNOB: selects the photo on the lower-right CRT ============ */
-let fIdx = 0, dragging = false;
-const tuner = $('tuner'), STEP = 270 / (FORZA_COUNT - 1);   // the knob sweeps 270 degrees across all photos
-tuner.setAttribute('aria-valuemax', FORZA_COUNT);
-function selectForza(i){
-  fIdx = Math.max(0, Math.min(FORZA_COUNT - 1, i));
-  const cur = fIdx, n = cur + 1;
-  tuner.style.transform = `rotate(${-135 + cur * STEP}deg)`;
-  tuner.style.transition = dragging ? 'none' : 'transform .2s';
-  tuner.setAttribute('aria-valuenow', n); tuner.setAttribute('aria-valuetext', `Photo ${n} of ${FORZA_COUNT}`);
-  $('fz-osd').textContent = `${n} / ${FORZA_COUNT}`;   // on-screen display over the CRT
-  showOnScreen(SCREENS.forza, forzaPath(n), `Image ${n}`, () => fIdx === cur);
-  [n - 1, n + 1].forEach(k => { if(k >= 1 && k <= FORZA_COUNT) new Image().src = forzaPath(k); });   // preload neighbours
+/* ============ CARS + KNOB: pick a car, then turn the knob through its photos ============ */
+let carIdx = 0, pIdx = 0, dragging = false;
+const tuner = $('tuner');
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+function selectCar(i){
+  carIdx = clamp(i, 0, CARS.length - 1);
+  carBtns.forEach((b, n) => { b.setAttribute('aria-current', n === carIdx); b.tabIndex = n === carIdx ? 0 : -1; });
+  selectPhoto(0);   // a new car starts at its first photo
 }
+function selectPhoto(i){
+  const id = CARS[carIdx], list = photosOf(id), count = list.length, car = carIdx;
+  pIdx = count ? clamp(i, 0, count - 1) : 0;
+  const cur = pIdx, n = cur + 1, step = count > 1 ? 270 / (count - 1) : 0;   // the knob sweeps 270 degrees across this car's photos
+  tuner.style.transform = `rotate(${-135 + cur * step}deg)`;
+  tuner.style.transition = dragging ? 'none' : 'transform .2s';
+  tuner.setAttribute('aria-valuemax', Math.max(count, 1)); tuner.setAttribute('aria-valuenow', n);
+  tuner.setAttribute('aria-valuetext', `${carLabel(id)} photo ${n} of ${count}`);
+  $('fz-osd').textContent = `${carLabel(id)}\n${count ? n : 0} / ${count}`;   // on-screen display over the CRT
+  const s = SCREENS.forza;
+  if(!count){   // no photos listed for this car
+    s.img.hidden = true; s.ph.hidden = false;
+    s.ph.innerHTML = DEBUG ? `${carLabel(id)}<small>no photos listed.<br>Run make-forza-manifest, or check assets/forza/${id}/</small>` : carLabel(id);
+    return;
+  }
+  showOnScreen(s, photoPath(id, list[cur]), `${carLabel(id)} ${n}`, () => carIdx === car && pIdx === cur);
+  [cur - 1, cur + 1].forEach(k => { if(list[k]) new Image().src = photoPath(id, list[k]); });   // preload neighbours
+}
+
+// cars: click to choose; Left / Right = previous / next car, Home / End = first / last
+carBtns.forEach(b => b.addEventListener('click', () => { selectCar(+b.dataset.i); b.focus(); }));
+$('cars').addEventListener('keydown', e => {
+  const cur = e.target.closest ? e.target.closest('.car') : null;
+  if(!cur) return;
+  let n = {ArrowRight: +cur.dataset.i + 1, ArrowLeft: +cur.dataset.i - 1, Home: 0, End: CARS.length - 1}[e.key];
+  if(n === undefined) return;
+  e.preventDefault();
+  n = clamp(n, 0, CARS.length - 1);
+  selectCar(n); carBtns[n].focus();
+});
+
+// knob
 tuner.addEventListener('pointerdown', e => { dragging = true; tuner.setPointerCapture(e.pointerId); drag(e); });
 tuner.addEventListener('pointermove', e => dragging && drag(e));
-tuner.addEventListener('pointerup',   () => { dragging = false; selectForza(fIdx); });
+tuner.addEventListener('pointerup',   () => { dragging = false; selectPhoto(pIdx); });
 function drag(e){
-  const r = tuner.getBoundingClientRect();
+  const count = photosOf(CARS[carIdx]).length, r = tuner.getBoundingClientRect();
+  if(count < 2) return;
   const a = Math.atan2(e.clientX - (r.left + r.width/2), -(e.clientY - (r.top + r.height/2))) * 180 / Math.PI;
-  selectForza(Math.round((Math.max(-135, Math.min(135, a)) + 135) / STEP));
+  selectPhoto(Math.round((clamp(a, -135, 135) + 135) / (270 / (count - 1))));
 }
 tuner.addEventListener('keydown', e => {
+  const count = photosOf(CARS[carIdx]).length;
   const k = {ArrowRight:1, ArrowUp:1, ArrowLeft:-1, ArrowDown:-1, PageUp:10, PageDown:-10}[e.key];
-  if(k){ selectForza(fIdx + k); e.preventDefault(); }
-  if(e.key === 'Home'){ selectForza(0); e.preventDefault(); }
-  if(e.key === 'End'){ selectForza(FORZA_COUNT - 1); e.preventDefault(); }
+  if(k){ selectPhoto(pIdx + k); e.preventDefault(); }
+  if(e.key === 'Home'){ selectPhoto(0); e.preventDefault(); }
+  if(e.key === 'End'){ selectPhoto(count - 1); e.preventDefault(); }
 });
 
 selectWork(0);
-selectForza(0);
+selectCar(0);
 layoutShelves();
 </script>
 </body>
